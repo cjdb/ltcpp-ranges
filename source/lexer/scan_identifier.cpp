@@ -13,17 +13,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-#ifndef LTCPP_LEXER_DETAIL_SCAN_STRING_LITERAL_HPP
-#define LTCPP_LEXER_DETAIL_SCAN_STRING_LITERAL_HPP
-
+#include <cctype>
+#include <istream>
+#include "ltcpp/lexer/detail/scan_identifier.hpp"
 #include "ltcpp/lexer/token.hpp"
 #include "ltcpp/source_coordinate.hpp"
-#include <istream>
+#include "ltcpp/consume_istream_while.hpp"
+#include <utility>
 
 namespace ltcpp::detail_lexer {
-   /// \brief Scans a string literal.
+   /// \brief
+   /// \param in
+   /// \param cursor The position in the source file where the identifier begins.
+   /// \returns
    ///
-   token scan_string_literal(std::istream& in, source_coordinate cursor) noexcept;
+   token scan_identifier(std::istream& in, source_coordinate const cursor) noexcept
+   {
+      constexpr auto is_identifier_char = [](unsigned char const x) constexpr noexcept {
+         return std::isalnum(x) or x == '_';
+      };
+      auto identifier = ltcpp::consume_istream_while(in, is_identifier_char);
+      return ltcpp::make_token(std::move(identifier), cursor);
+   }
 } // namespace ltcpp::detail_lexer
-
-#endif // LTCPP_LEXER_DETAIL_SCAN_STRING_LITERAL_HPP
