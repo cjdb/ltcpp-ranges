@@ -13,17 +13,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
-#ifndef LTCPP_LEXER_DETAIL_SCAN_STRING_LITERAL_HPP
-#define LTCPP_LEXER_DETAIL_SCAN_STRING_LITERAL_HPP
+#ifndef LTCPP_IRREGULAR_TRANSFORM_HPP
+#define LTCPP_IRREGULAR_TRANSFORM_HPP
 
-#include "ltcpp/lexer/token.hpp"
-#include "ltcpp/source_coordinate.hpp"
-#include <istream>
+#include <range/v3/view/for_each.hpp>
+#include <range/v3/view/single.hpp>
+#include <utility>
 
-namespace ltcpp::detail_lexer {
-   /// \brief Scans a string literal.
-   ///
-   token scan_string_literal(std::istream& in, source_coordinate cursor) noexcept;
-} // namespace ltcpp::detail_lexer
-
-#endif // LTCPP_LEXER_DETAIL_SCAN_STRING_LITERAL_HPP
+namespace ltcpp {
+   inline auto irregular_transform = [](auto f){
+      return ranges::view::for_each([f=std::move(f)](auto&& r){
+         return ranges::view::single(f(std::forward<decltype(r)>(r)));
+      });
+   };
+} // namespace ltcpp
+#endif // LTCPP_IRREGULAR_TRANSFORM_HPP
