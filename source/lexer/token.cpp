@@ -142,8 +142,8 @@ namespace ltcpp {
    noexcept
    {
       auto const cursor_end = source_coordinate{
-         source_coordinate::column_type{ranges::distance(lexeme)},
-         source_coordinate::line_type{0} // lexemes don't span multiple lines
+         source_coordinate::line_type{0}, // lexemes don't span multiple lines
+         source_coordinate::column_type{ranges::distance(lexeme)}
       };
       return token{
          kind,

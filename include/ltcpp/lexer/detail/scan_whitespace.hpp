@@ -20,6 +20,7 @@
 #include "ltcpp/source_coordinate.hpp"
 #include "ltcpp/source_coordinate_range.hpp"
 #include <istream>
+#include "tl/expected.hpp"
 #include <utility>
 
 namespace ltcpp::detail_lexer {

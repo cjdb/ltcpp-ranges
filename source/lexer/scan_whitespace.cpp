@@ -33,13 +33,16 @@
 #include <range/v3/view/reverse.hpp>
 #include <string_view>
 #include "tl/expected.hpp"
+#include <variant>
 
 namespace ltcpp::detail_lexer {
    using namespace ranges;
    using namespace std::string_literals;
 
-   enum class unexpected_whitespace { not_comment, unterminated_comment };
-   using expected = tl::expected<source_coordinate, unexpected_whitespace>;
+   struct not_comment {};
+
+   using whitespace_error = std::variant<not_comment, unterminated_comment_error>;
+   using expected = tl::expected<source_coordinate, whitespace_error>;
 
    /// \brief Given a string of UTF-8 coded characters, calculates the delta that a
    ///        source_coordinate moves by.
@@ -58,11 +61,9 @@ namespace ltcpp::detail_lexer {
          adjacent_find(reversed_code_points, cjdb::is_newline).base(),
          end(code_points)
       };
-      return expected{
-         source_coordinate{
-            source_coordinate::column_type{distance(last_line)},
-            source_coordinate::line_type{count_if(code_points, cjdb::is_newline)}
-         }
+      return source_coordinate{
+         source_coordinate::line_type{count_if(code_points, cjdb::is_newline)},
+         source_coordinate::column_type{distance(last_line)}
       };
    }
 
@@ -114,11 +115,18 @@ namespace ltcpp::detail_lexer {
          comment += static_cast<char>(in.get());
       }
 
+      auto const cursor = ::ltcpp::detail_lexer::cursor_delta(comment);
+
       if (in) {
-         return ::ltcpp::detail_lexer::cursor_delta(comment);
+         return cursor;
       }
       else {
-         return tl::unexpected{unexpected_whitespace::unterminated_comment};
+         return tl::unexpected{
+            unterminated_comment_error{
+               source_coordinate{},
+               *cursor
+            }
+         };
       }
    }
 
@@ -137,7 +145,7 @@ namespace ltcpp::detail_lexer {
       }
       else { // this '/' wasn't the start of a comment
          in.unget();
-         return tl::unexpected{unexpected_whitespace::not_comment};
+         return tl::unexpected{not_comment{}};
       }
    }
 
@@ -146,7 +154,7 @@ namespace ltcpp::detail_lexer {
    ///
    /// No subsequent characters are read.
    ///
-   std::pair<source_coordinate, bool>
+   tl::expected<source_coordinate, unterminated_comment_error>
    scan_whitespace_like(std::istream& in, source_coordinate cursor) noexcept
    {
       // Deduces if a single character is whitespace or a forward slash.
@@ -163,11 +171,11 @@ namespace ltcpp::detail_lexer {
 
       // Deduces if the whitespaceish character was actually just a forward slash.
       auto whitespace_confirmed = [](auto&& x) noexcept {
-         return x or x.error() == unexpected_whitespace::unterminated_comment;
+         return x or std::holds_alternative<unterminated_comment_error>(x.error());
       };
 
       // yucky state here
-      bool unterminated_comment = false;
+      auto unterminated_comment = std::optional<unterminated_comment_error>{};
 
       // Transforms an expected object into a coordinate object.
       // returns *coordinate if the value has been set; a source_coordinate equivalent to {0:0}
@@ -179,10 +187,10 @@ namespace ltcpp::detail_lexer {
             return *coordinate;
          }
          else {
-            unterminated_comment = true;
+            unterminated_comment = std::get<unterminated_comment_error>(coordinate.error());
             return source_coordinate{
-               source_coordinate::column_type{0},
-               source_coordinate::line_type{0}
+               source_coordinate::line_type{0},
+               source_coordinate::column_type{0}
             };
          }
       };
@@ -197,7 +205,12 @@ namespace ltcpp::detail_lexer {
       if (in) {
          in.unget(); // take_while consumes an extra character
       }
+      else if (unterminated_comment) {
+         unterminated_comment->begin = cursor;
+         unterminated_comment->end = source_coordinate::shift(cursor, unterminated_comment->end);
+         return tl::unexpected{*unterminated_comment};
+      }
 
-      return {cursor, unterminated_comment};
+      return cursor;
    }
 } // namespace ltcpp::detail_lexer
