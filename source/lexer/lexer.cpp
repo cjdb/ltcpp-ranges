@@ -53,37 +53,49 @@ namespace {
 
    /// \brief
    ///
-   token scan_token(std::istream& in, reporter& report, source_coordinate const cursor,
-      bool const unterminated_comment) noexcept(false)
+   token scan_token(std::istream& in, reporter& report,
+      tl::expected<source_coordinate, lexer::unterminated_comment_error> cursor_result) noexcept(false)
    {
       if (auto const peek = static_cast<char>(in.peek()); cjdb::isalpha(peek)) {
-         return lexer::scan_identifier(in, cursor);
+         assert(cursor_result);
+         return lexer::scan_identifier(in, *cursor_result);
       }
       else if (cjdb::isdigit(peek)) {
-         auto result = lexer::scan_number(in, cursor);
+         assert(cursor_result);
+         auto result = lexer::scan_number(in, *cursor_result);
          check_for_error(report, result);
          return result;
       }
       else if (peek == '.') {
-         auto result = lexer::possibly_float(in, cursor);
+         assert(cursor_result);
+         auto result = lexer::possibly_float(in, *cursor_result);
          check_for_error(report, result);
          return result;
       }
       else if (peek == '"') {
-         auto result = lexer::scan_string_literal(in, cursor);
+         assert(cursor_result);
+         auto result = lexer::scan_string_literal(in, *cursor_result);
          check_for_error(report, result);
          return result;
       }
       else if (auto current = '\0'; in.get(current)) {
-         return lexer::scan_symbol(in, current, cursor);
+         assert(cursor_result);
+         return lexer::scan_symbol(in, current, *cursor_result);
       }
       else if (in.eof()) {
-         if (unterminated_comment) {
-            report.error(pass::lexical, cursor, "unterminated multi-line comment.");
+         auto eof_cursor = source_coordinate{};
+
+         if (cursor_result) {
+            eof_cursor = *cursor_result;
+         }
+         else {
+            auto const error = cursor_result.error();
+            report.error(pass::lexical, error.begin, "unterminated multi-line comment.");
+            eof_cursor = error.end;
          }
 
          constexpr auto eof_spelling = "$";
-         return token{token_kind::eof, eof_spelling, cursor, cursor};
+         return token{token_kind::eof, eof_spelling, eof_cursor, eof_cursor};
       }
       else {
          throw std::runtime_error{"Unable to read character from stream."};
@@ -97,7 +109,7 @@ namespace ltcpp {
    token generate_token(std::istream& in, reporter& report, source_coordinate const cursor) noexcept(false)
    {
       auto const cursor_result = detail_lexer::scan_whitespace_like(in, cursor);
-      auto const token_result = ::scan_token(in, report, cursor_result.first, cursor_result.second);
+      auto const token_result = ::scan_token(in, report, cursor_result);
       return token_result;
    }
 } // namespace ltcpp

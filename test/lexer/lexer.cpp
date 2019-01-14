@@ -69,74 +69,74 @@ TEST_CASE("Check lexer") {
          token{
             token_kind::int_,
             "int",
-            source_coordinate{column_type{1}, line_type{1}},
-            source_coordinate{column_type{4}, line_type{1}}
+            source_coordinate{line_type{1}, column_type{1}},
+            source_coordinate{line_type{1}, column_type{4}}
          },
          token{
             token_kind::identifier,
             "main",
-            source_coordinate{column_type{5}, line_type{1}},
-            source_coordinate{column_type{9}, line_type{1}}
+            source_coordinate{line_type{1}, column_type{5}},
+            source_coordinate{line_type{1}, column_type{9}}
          },
          token{
             token_kind::paren_open,
             "(",
-            source_coordinate{column_type{9}, line_type{1}},
-            source_coordinate{column_type{10}, line_type{1}}
+            source_coordinate{line_type{1}, column_type{9}},
+            source_coordinate{line_type{1}, column_type{10}}
          },
          token{
             token_kind::paren_close,
             ")",
-            source_coordinate{column_type{10}, line_type{1}},
-            source_coordinate{column_type{11}, line_type{1}}
+            source_coordinate{line_type{1}, column_type{10}},
+            source_coordinate{line_type{1}, column_type{11}}
          },
          token{
             token_kind::brace_open,
             "{",
-            source_coordinate{column_type{1}, line_type{2}},
-            source_coordinate{column_type{2}, line_type{2}}
+            source_coordinate{line_type{2}, column_type{1}},
+            source_coordinate{line_type{2}, column_type{2}}
          },
          token{
             token_kind::identifier,
             "print",
-            source_coordinate{column_type{4}, line_type{3}},
-            source_coordinate{column_type{9}, line_type{3}}
+            source_coordinate{line_type{3}, column_type{4}},
+            source_coordinate{line_type{3}, column_type{9}}
          },
          token{
             token_kind::paren_open,
             "(",
-            source_coordinate{column_type{9}, line_type{3}},
-            source_coordinate{column_type{10}, line_type{3}}
+            source_coordinate{line_type{3}, column_type{9}},
+            source_coordinate{line_type{3}, column_type{10}}
          },
          token{
             token_kind::string_literal,
             "\"Hello, world!\n\"",
-            source_coordinate{column_type{10}, line_type{3}},
-            source_coordinate{column_type{26}, line_type{3}}
+            source_coordinate{line_type{3}, column_type{10}},
+            source_coordinate{line_type{3}, column_type{26}}
          },
          token{
             token_kind::paren_close,
             ")",
-            source_coordinate{column_type{26}, line_type{3}},
-            source_coordinate{column_type{27}, line_type{3}}
+            source_coordinate{line_type{3}, column_type{26}},
+            source_coordinate{line_type{3}, column_type{27}}
          },
          token{
             token_kind::semicolon,
             ";",
-            source_coordinate{column_type{27}, line_type{3}},
-            source_coordinate{column_type{28}, line_type{3}}
+            source_coordinate{line_type{3}, column_type{27}},
+            source_coordinate{line_type{3}, column_type{28}}
          },
          token{
             token_kind::brace_close,
             "}",
-            source_coordinate{column_type{1}, line_type{4}},
-            source_coordinate{column_type{2}, line_type{4}}
+            source_coordinate{line_type{4}, column_type{1}},
+            source_coordinate{line_type{4}, column_type{2}}
          },
          token{
             token_kind::eof,
             "$",
-            source_coordinate{column_type{1}, line_type{5}},
-            source_coordinate{column_type{1}, line_type{5}}
+            source_coordinate{line_type{5}, column_type{1}},
+            source_coordinate{line_type{5}, column_type{1}}
          }
       };
 
@@ -165,74 +165,74 @@ TEST_CASE("Check lexer") {
          token{
             token_kind::int_,
             "int",
-            source_coordinate{column_type{1}, line_type{2}},
-            source_coordinate{column_type{4}, line_type{2}}
+            source_coordinate{line_type{2}, column_type{1}},
+            source_coordinate{line_type{2}, column_type{4}}
          },
          token{
             token_kind::identifier,
             "main",
-            source_coordinate{column_type{5}, line_type{2}},
-            source_coordinate{column_type{9}, line_type{2}}
+            source_coordinate{line_type{2}, column_type{5}},
+            source_coordinate{line_type{2}, column_type{9}}
          },
          token{
             token_kind::paren_open,
             "(",
-            source_coordinate{column_type{9}, line_type{2}},
-            source_coordinate{column_type{10}, line_type{2}}
+            source_coordinate{line_type{2}, column_type{9}},
+            source_coordinate{line_type{2}, column_type{10}}
          },
          token{
             token_kind::paren_close,
             ")",
-            source_coordinate{column_type{10}, line_type{2}},
-            source_coordinate{column_type{11}, line_type{2}}
+            source_coordinate{line_type{2}, column_type{10}},
+            source_coordinate{line_type{2}, column_type{11}}
          },
          token{
             token_kind::brace_open,
             "{",
-            source_coordinate{column_type{1}, line_type{3}},
-            source_coordinate{column_type{2}, line_type{3}}
+            source_coordinate{line_type{3}, column_type{1}},
+            source_coordinate{line_type{3}, column_type{2}}
          },
          token{
             token_kind::identifier,
             "print",
-            source_coordinate{column_type{4}, line_type{4}},
-            source_coordinate{column_type{9}, line_type{4}}
+            source_coordinate{line_type{4}, column_type{4}},
+            source_coordinate{line_type{4}, column_type{9}}
          },
          token{
             token_kind::paren_open,
             "(",
-            source_coordinate{column_type{9}, line_type{4}},
-            source_coordinate{column_type{10}, line_type{4}}
+            source_coordinate{line_type{4}, column_type{9}},
+            source_coordinate{line_type{4}, column_type{10}}
          },
          token{
             token_kind::string_literal,
             "\"Hello, world!\n\"",
-            source_coordinate{column_type{10}, line_type{4}},
-            source_coordinate{column_type{26}, line_type{4}}
+            source_coordinate{line_type{4}, column_type{10}},
+            source_coordinate{line_type{4}, column_type{26}}
          },
          token{
             token_kind::paren_close,
             ")",
-            source_coordinate{column_type{26}, line_type{4}},
-            source_coordinate{column_type{27}, line_type{4}}
+            source_coordinate{line_type{4}, column_type{26}},
+            source_coordinate{line_type{4}, column_type{27}}
          },
          token{
             token_kind::semicolon,
             ";",
-            source_coordinate{column_type{27}, line_type{4}},
-            source_coordinate{column_type{28}, line_type{4}}
+            source_coordinate{line_type{4}, column_type{27}},
+            source_coordinate{line_type{4}, column_type{28}}
          },
          token{
             token_kind::brace_close,
             "}",
-            source_coordinate{column_type{1}, line_type{5}},
-            source_coordinate{column_type{2}, line_type{5}}
+            source_coordinate{line_type{5}, column_type{1}},
+            source_coordinate{line_type{5}, column_type{2}}
          },
          token{
             token_kind::eof,
             "$",
-            source_coordinate{column_type{1}, line_type{6}},
-            source_coordinate{column_type{1}, line_type{6}}
+            source_coordinate{line_type{6}, column_type{1}},
+            source_coordinate{line_type{6}, column_type{1}}
          }
       };
 
@@ -249,50 +249,50 @@ TEST_CASE("Check lexer") {
          token{
             token_kind::identifier,
             "x",
-            source_coordinate{column_type{1}, line_type{1}},
-            source_coordinate{column_type{2}, line_type{1}}
+            source_coordinate{line_type{1}, column_type{1}},
+            source_coordinate{line_type{1}, column_type{2}}
          },
          token{
             token_kind::assign,
             "=",
-            source_coordinate{column_type{3}, line_type{1}},
-            source_coordinate{column_type{4}, line_type{1}}
+            source_coordinate{line_type{1}, column_type{3}},
+            source_coordinate{line_type{1}, column_type{4}}
          },
          token{
             token_kind::too_many_radix_points,
             "10.10.10",
-            source_coordinate{column_type{5}, line_type{1}},
-            source_coordinate{column_type{13}, line_type{1}}
+            source_coordinate{line_type{1}, column_type{5}},
+            source_coordinate{line_type{1}, column_type{13}}
          },
          token{
             token_kind::floating_literal,
             ".956",
-            source_coordinate{column_type{14}, line_type{1}},
-            source_coordinate{column_type{18}, line_type{1}}
+            source_coordinate{line_type{1}, column_type{14}},
+            source_coordinate{line_type{1}, column_type{18}}
          },
          token{
             token_kind::identifier,
             "a",
-            source_coordinate{column_type{19}, line_type{1}},
-            source_coordinate{column_type{20}, line_type{1}}
+            source_coordinate{line_type{1}, column_type{19}},
+            source_coordinate{line_type{1}, column_type{20}}
          },
          token{
             token_kind::dot,
             ".",
-            source_coordinate{column_type{20}, line_type{1}},
-            source_coordinate{column_type{21}, line_type{1}}
+            source_coordinate{line_type{1}, column_type{20}},
+            source_coordinate{line_type{1}, column_type{21}}
          },
          token{
             token_kind::identifier,
             "b",
-            source_coordinate{column_type{21}, line_type{1}},
-            source_coordinate{column_type{22}, line_type{1}}
+            source_coordinate{line_type{1}, column_type{21}},
+            source_coordinate{line_type{1}, column_type{22}}
          },
          token{
             token_kind::eof,
             "$",
-            source_coordinate{column_type{22}, line_type{1}},
-            source_coordinate{column_type{22}, line_type{1}}
+            source_coordinate{line_type{1}, column_type{22}},
+            source_coordinate{line_type{1}, column_type{22}}
          }
       };
       CHECK_EQUAL(tokens, expected_tokens);
@@ -308,32 +308,32 @@ TEST_CASE("Check lexer") {
          token{
             token_kind::identifier,
             "x",
-            source_coordinate{column_type{1}, line_type{1}},
-            source_coordinate{column_type{2}, line_type{1}}
+            source_coordinate{line_type{1}, column_type{1}},
+            source_coordinate{line_type{1}, column_type{2}}
          },
          token{
             token_kind::assign,
             "=",
-            source_coordinate{column_type{3}, line_type{1}},
-            source_coordinate{column_type{4}, line_type{1}}
+            source_coordinate{line_type{1}, column_type{3}},
+            source_coordinate{line_type{1}, column_type{4}}
          },
          token{
             token_kind::exponent_lacking_digit,
             "543e",
-            source_coordinate{column_type{5}, line_type{1}},
-            source_coordinate{column_type{9}, line_type{1}}
+            source_coordinate{line_type{1}, column_type{5}},
+            source_coordinate{line_type{1}, column_type{9}}
          },
          token{
             token_kind::floating_literal,
             "87.",
-            source_coordinate{column_type{10}, line_type{1}},
-            source_coordinate{column_type{13}, line_type{1}}
+            source_coordinate{line_type{1}, column_type{10}},
+            source_coordinate{line_type{1}, column_type{13}}
          },
          token{
             token_kind::eof,
             "$",
-            source_coordinate{column_type{13}, line_type{1}},
-            source_coordinate{column_type{13}, line_type{1}}
+            source_coordinate{line_type{1}, column_type{13}},
+            source_coordinate{line_type{1}, column_type{13}}
          }
       };
       CHECK_EQUAL(tokens, expected_tokens);
@@ -356,20 +356,20 @@ TEST_CASE("Check lexer") {
          token{
             token_kind::int_,
             "int",
-            source_coordinate{column_type{1}, line_type{1}},
-            source_coordinate{column_type{4}, line_type{1}}
+            source_coordinate{line_type{1}, column_type{1}},
+            source_coordinate{line_type{1}, column_type{4}}
          },
          token{
             token_kind::identifier,
             "main",
-            source_coordinate{column_type{5}, line_type{1}},
-            source_coordinate{column_type{9}, line_type{1}}
+            source_coordinate{line_type{1}, column_type{5}},
+            source_coordinate{line_type{1}, column_type{9}}
          },
          token{
             token_kind::eof,
             "$",
-            source_coordinate{column_type{1}, line_type{5}},
-            source_coordinate{column_type{1}, line_type{5}}
+            source_coordinate{line_type{5}, column_type{1}},
+            source_coordinate{line_type{5}, column_type{1}}
          }
       };
 

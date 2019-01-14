@@ -37,9 +37,9 @@ namespace ltcpp {
       /// \brief Initialises the column value with the column parameter and initialises the line
       ///        value with the line parameter.
       ///
-      constexpr explicit source_coordinate(column_type const column, line_type const line) noexcept
-         : column_{column}
-         , line_{line}
+      constexpr explicit source_coordinate(line_type const line, column_type const column) noexcept
+         : line_{line}
+         , column_{column}
       {}
 
       /// \brief Returns the column value.
@@ -98,6 +98,7 @@ namespace ltcpp {
       source_coordinate shift(source_coordinate const x, source_coordinate const y) noexcept
       {
          return source_coordinate{
+            line_type{x.line() + y.line()},
             column_type{
                  [&x, &y]{
                     if (y.line() == line_type{0})
@@ -107,13 +108,12 @@ namespace ltcpp {
                     else
                        return column_type{1};
                  }()
-            },
-            line_type{x.line() + y.line()}
+            }
          };
       }
    private:
-      column_type column_{1};
       line_type line_{1};
+      column_type column_{1};
    };
 } // namespace ltcpp
 

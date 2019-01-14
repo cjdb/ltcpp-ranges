@@ -19,10 +19,16 @@
 #include "ltcpp/lexer/token.hpp"
 #include "ltcpp/source_coordinate.hpp"
 #include <istream>
+#include "tl/expected.hpp"
 #include <utility>
 
 namespace ltcpp::detail_lexer {
-   std::pair<source_coordinate, bool>
+   struct unterminated_comment_error {
+      source_coordinate begin;
+      source_coordinate end;
+   };
+
+   tl::expected<source_coordinate, unterminated_comment_error>
    scan_whitespace_like(std::istream& in, source_coordinate cursor) noexcept;
 } // namespace ltcpp::detail_lexer
 
