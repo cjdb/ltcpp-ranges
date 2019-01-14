@@ -40,7 +40,7 @@ std::vector<ltcpp::token> generate_tokens(std::string const& source, ltcpp::repo
       auto token = ltcpp::generate_token(in, report, cursor);
       cursor = token.position().end;
       tokens.push_back(std::move(token));
-      if (token.kind() == ltcpp::token_kind::eof) {
+      if (tokens.back().kind() == ltcpp::token_kind::eof) {
          break;
       }
    }
