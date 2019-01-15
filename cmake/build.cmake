@@ -82,7 +82,6 @@ function(build_impl target libraries)
       message(STATUS "Linking ${i} with ${target}")
       target_link_libraries("${target}" PRIVATE ${i})
    endforeach()
-   add_compile_options(-DRANGES_DEEP_STL_INTEGRATION=1)
 endfunction()
 
 # \brief Produces a target name for compiling a translation unit.

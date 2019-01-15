@@ -15,6 +15,7 @@
 //
 #include <cctype>
 #include <istream>
+#include "cjdb/cctype/isalnum.hpp"
 #include "ltcpp/lexer/detail/scan_identifier.hpp"
 #include "ltcpp/lexer/token.hpp"
 #include "ltcpp/source_coordinate.hpp"
@@ -29,8 +30,8 @@ namespace ltcpp::detail_lexer {
    ///
    token scan_identifier(std::istream& in, source_coordinate const cursor) noexcept
    {
-      constexpr auto is_identifier_char = [](unsigned char const x) constexpr noexcept {
-         return std::isalnum(x) or x == '_';
+      constexpr auto is_identifier_char = [](char const x) constexpr noexcept {
+         return cjdb::isalnum(x) or x == '_';
       };
       auto identifier = ltcpp::consume_istream_while(in, is_identifier_char);
       return ltcpp::make_token(std::move(identifier), cursor);

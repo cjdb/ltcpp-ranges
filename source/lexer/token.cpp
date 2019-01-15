@@ -13,18 +13,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
+#include <algorithm>
 #include <cjdb/cctype/isalpha.hpp>
 #include <cjdb/cctype/isdigit.hpp>
 #include <gsl/gsl>
+#include <iterator>
 #include "ltcpp/lexer/token.hpp"
-#include <range/v3/algorithm/count.hpp>
-#include <range/v3/distance.hpp>
 #include <string_view>
 #include <unordered_map>
 
 namespace {
-   using namespace ranges;
-
    /// \brief
    /// \param lexeme
    /// \returns
@@ -32,10 +30,8 @@ namespace {
    ltcpp::token_kind deduce_number_kind(std::string_view const lexeme) noexcept
    {
       auto result = ltcpp::token_kind::integral_literal;
-      auto const has_exponent = [](auto const l) noexcept {
-         return l.find('E') != std::string_view::npos or l.find('e') != std::string_view::npos;
-      };
-      if (auto radix_point = count(lexeme, '.'); radix_point == 1 or has_exponent(lexeme)) {
+      if (auto radix_point = std::count(begin(lexeme), end(lexeme), '.'); radix_point == 1 or
+          lexeme.find('E') != std::string_view::npos or lexeme.find('e') != std::string_view::npos) {
          result = ltcpp::token_kind::floating_literal;
       }
       else if (radix_point > 1) {
@@ -144,7 +140,7 @@ namespace ltcpp {
    {
       auto const cursor_end = source_coordinate{
          source_coordinate::line_type{0}, // lexemes don't span multiple lines
-         source_coordinate::column_type{ranges::distance(lexeme)}
+         source_coordinate::column_type{std::distance(begin(lexeme), end(lexeme))}
       };
       return token{
          kind,

@@ -13,10 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-build_library("${prefix}" lexer range-v3)
-build_library("${prefix}" scan_whitespace range-v3)
-build_library("${prefix}" scan_string_literal range-v3)
-build_library("${prefix}" scan_symbol range-v3)
-build_library("${prefix}" scan_identifier range-v3)
-build_library("${prefix}" scan_number range-v3)
-build_library("${prefix}" token range-v3)
+build_library("${prefix}" lexer)
+build_library("${prefix}" scan_whitespace)
+build_library("${prefix}" scan_string_literal)
+build_library("${prefix}" scan_symbol)
+build_library("${prefix}" scan_identifier)
+build_library("${prefix}" scan_number)
+build_library("${prefix}" token)

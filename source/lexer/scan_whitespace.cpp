@@ -13,6 +13,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 //
+#include <algorithm>
+#include <cassert>
 #include <cjdb/cctype/is_newline.hpp>
 #include <cjdb/cctype/is_printable.hpp>
 #include <cjdb/cctype/isspace.hpp>
@@ -20,23 +22,12 @@
 #include <istream>
 #include "ltcpp/consume_istream_while.hpp"
 #include "ltcpp/lexer/detail/scan_whitespace.hpp"
-#include "ltcpp/irregular_transform.hpp"
 #include "ltcpp/source_coordinate.hpp"
-#include <range/v3/action/push_back.hpp>
-#include <range/v3/algorithm/adjacent_find.hpp>
-#include <range/v3/algorithm/count_if.hpp>
-#include <range/v3/numeric/accumulate.hpp>
-#include <range/v3/iterator_range.hpp>
-#include <range/v3/to_container.hpp>
-#include <range/v3/view/generate.hpp>
-#include <range/v3/view/take_while.hpp>
-#include <range/v3/view/reverse.hpp>
 #include <string_view>
 #include "tl/expected.hpp"
 #include <variant>
 
 namespace ltcpp::detail_lexer {
-   using namespace ranges;
    using namespace std::string_literals;
 
    struct not_comment {};
@@ -56,14 +47,15 @@ namespace ltcpp::detail_lexer {
    ///
    expected cursor_delta(std::string_view const code_points) noexcept
    {
-      auto const reversed_code_points = code_points | view::reverse;
-      auto const last_line = iterator_range{
-         adjacent_find(reversed_code_points, cjdb::is_newline).base(),
-         end(code_points)
-      };
+      auto const last_line_begin = std::adjacent_find(rbegin(code_points), rend(code_points),
+         cjdb::is_newline).base();
+      auto const last_line_end = end(code_points);
+
       return source_coordinate{
-         source_coordinate::line_type{count_if(code_points, cjdb::is_newline)},
-         source_coordinate::column_type{distance(last_line)}
+         source_coordinate::line_type{
+            std::count_if(begin(code_points), end(code_points), cjdb::is_newline)
+         },
+         source_coordinate::column_type{std::distance(last_line_begin, last_line_end)}
       };
    }
 
@@ -103,10 +95,9 @@ namespace ltcpp::detail_lexer {
    {
       auto comment = "/*"s;
       do {
-         action::push_back(
-            comment,
-            istream_range<char>(in) | view::take_while(cjdb::ranges::partial_not_equal_to{'*'})
-         );
+         for (auto c = '\0'; in.get(c) and c != '*';) {
+            comment += c;
+         }
          comment += in.good() ? "*" : "";
       } while (in and in.peek() != '/');
 
@@ -157,50 +148,29 @@ namespace ltcpp::detail_lexer {
    tl::expected<source_coordinate, unterminated_comment_error>
    scan_whitespace_like(std::istream& in, source_coordinate cursor) noexcept
    {
-      // Deduces if a single character is whitespace or a forward slash.
-      auto is_whitespaceish = [](auto const c) noexcept {
-         return cjdb::isspace(c) or c == '/';
-      };
-
-      // Dispatches to the comment scanner if the character is a forward slash and the whitespace
-      // scanner otherwise.
-      auto read_whitespaceish = [&in](auto const c) noexcept {
-         return (c == '/') ? ::ltcpp::detail_lexer::skip_comment(in)
-                           : ::ltcpp::detail_lexer::scan_whitespace(in, c);
-      };
-
-      // Deduces if the whitespaceish character was actually just a forward slash.
-      auto whitespace_confirmed = [](auto&& x) noexcept {
-         return x or std::holds_alternative<unterminated_comment_error>(x.error());
-      };
-
-      // yucky state here
       auto unterminated_comment = std::optional<unterminated_comment_error>{};
-
-      // Transforms an expected object into a coordinate object.
-      // returns *coordinate if the value has been set; a source_coordinate equivalent to {0:0}
-      // otherwise.
-      // If the expected object's value has not been set, then the unterminated_comment flag is
-      // raised to indicate that we've reached an error state.
-      auto unwrap_coordinate = [&unterminated_comment](auto const coordinate) noexcept {
-         if (coordinate) {
-            return *coordinate;
+      for (auto c = '\0'; in.get(c) and (cjdb::isspace(c) or c == '/');) {
+         if (c == '/') {
+            auto result = ::ltcpp::detail_lexer::skip_comment(in);
+            if (result) {
+               cursor = source_coordinate::shift(cursor, *result);
+            }
+            else if (std::holds_alternative<unterminated_comment_error>(result.error())) {
+               unterminated_comment = std::get<unterminated_comment_error>(result.error());
+            }
+            else {
+               break; // this wasn't a comment, let's get out of here
+            }
+         }
+         else if (auto result = ::ltcpp::detail_lexer::scan_whitespace(in, c); result) {
+            // better to check now, when it's always safe, than to deref and have the code become
+            // undefined one day later on.
+            cursor = source_coordinate::shift(cursor, *result);
          }
          else {
-            unterminated_comment = std::get<unterminated_comment_error>(coordinate.error());
-            return source_coordinate{
-               source_coordinate::line_type{0},
-               source_coordinate::column_type{0}
-            };
+            assert(false); // logic error, I guess?
          }
-      };
-
-      auto whitespace_distance = istream_range<char>(in)
-                               | view::take_while(is_whitespaceish)
-                               | ltcpp::irregular_transform(read_whitespaceish)
-                               | view::take_while(whitespace_confirmed)
-                               | ltcpp::irregular_transform(unwrap_coordinate);
-      cursor = accumulate(whitespace_distance, cursor, &source_coordinate::shift);
+      }
 
       if (in) {
          in.unget(); // take_while consumes an extra character

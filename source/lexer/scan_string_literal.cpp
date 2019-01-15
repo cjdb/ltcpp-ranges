@@ -15,44 +15,20 @@
 //
 #include "ltcpp/lexer/token.hpp"
 
+#include <algorithm>
 #include <cjdb/cctype/is_newline.hpp>
 #include <gsl/gsl>
 #include <istream>
+#include <iterator>
 #include "ltcpp/consume_istream_while.hpp"
 #include "ltcpp/lexer/detail/scan_string_literal.hpp"
-#include <range/v3/action/adjacent_remove_if.hpp>
-#include <range/v3/algorithm/count.hpp>
-#include <range/v3/algorithm/equal.hpp>
-#include <range/v3/algorithm/for_each.hpp>
-#include <range/v3/view/drop.hpp>
-#include <range/v3/view/drop_while.hpp>
-#include <range/v3/view/slice.hpp>
-#include <range/v3/view/split.hpp>
 #include <string>
 #include <string_view>
 
 namespace {
-   using namespace ranges;
    using namespace std::string_view_literals;
 
    constexpr auto legal_escapes = R"(bfnrt\'")"sv;
-
-   /// \brief A predicate that determines if two elements in a string are an escape sequence.
-   ///
-   /// This predicate is used to split on escape sequences.
-   /// \param first Iterator to the beginning of the range.
-   /// \param last Sentinel denoting the end of the range.
-   /// \returns A paired boolean and iterator to the backslash.
-   /// \note The return type is prescribed by split_view.
-   ///
-   auto is_escape = [](auto first, auto last) constexpr noexcept {
-      auto result = false;
-      if (auto next = ranges::next(first); next != last) {
-         result = *first == '\\' and legal_escapes.find(*next) != std::string_view::npos;
-      }
-
-      return std::make_pair(result, first);
-   };
 
    /// \brief Checks each escape sequence is a legal escape sequence.
    /// \returns `token_kind::string_literal` if all escape sequences are legal;
@@ -60,24 +36,17 @@ namespace {
    ///
    ltcpp::token_kind validate_escapes(std::string_view const lexeme) noexcept
    {
-      auto no_illegal_escapes = [](auto&& x) constexpr noexcept {
-         // the first two characters need to be checked separately to the rest of the literal,
-         // because we get a false positive otherwise ("\\" has two backslashes, which immediately
-         // disqualifies it, if we were to bundle the first two characters together).
-         if (distance(x) >= 2 and x[0] == '\\' and legal_escapes.find(x[1]) == std::string_view::npos) {
-            return false;
+      for (auto i = begin(lexeme); i != end(lexeme); ++i) {
+         if (*i == '\\') {
+            auto successor = std::next(i);
+            if (successor != end(lexeme) and legal_escapes.find(*successor) == std::string_view::npos) {
+               return ltcpp::token_kind::invalid_escape_sequence;
+            }
+            ++i;
          }
-         else {
-            return count(x | view::drop(2), '\\') == 0;
-         }
-      };
+      }
 
-      auto invalid_escapes = lexeme
-                           | view::split(is_escape)
-                           | view::drop_while(no_illegal_escapes);
-
-      return empty(invalid_escapes) ? ltcpp::token_kind::string_literal
-                                    : ltcpp::token_kind::invalid_escape_sequence;
+      return ltcpp::token_kind::string_literal;
    }
 
    /// \brief Checks that the string literal is terminated by a close-quote and that all escape
@@ -89,7 +58,10 @@ namespace {
    {
       // TODO: replace ends_with(lexeme, r2) with lexeme.ends_with(r2) when GCC 9 is released.
       auto ends_with = [](auto const& r1, auto const& r2) {
-         return equal(r1 | view::drop(size(r1) - size(r2)), r2);
+         if (r1.size() < r2.size()) {
+            return false;
+         }
+         return std::equal(std::next(begin(r1), static_cast<long int>(size(r1) - size(r2))), end(r1), begin(r2));
       };
       using namespace std::string_view_literals;
       if (not ends_with(lexeme, "\""sv) or ends_with(lexeme, R"(\")"sv)) {
@@ -107,47 +79,54 @@ namespace {
       constexpr auto legal_escape = [](auto const x, auto const y) constexpr noexcept {
          return x == '\\' and (std::iscntrl(y) or y == '\\' or y == '\"' or y == '\'');
       };
-      string_literal |= action::adjacent_remove_if(legal_escape);
+      auto first = begin(string_literal);
+      auto last = end(string_literal);
+      while (first != last) {
+         first = adjacent_find(first, last, legal_escape);
+         if (first != last) {
+            last = move(next(first), last, first);
+         }
+      }
+      string_literal.erase(last, end(string_literal));
    }
 
    /// \brief Transforms escaped characters into their actual character representation.
    ///
    void generate_escapes(std::string& string_literal) noexcept
    {
-      auto transform_escape = [](auto&& subrange) noexcept {
-         Expects(distance(subrange) >= 2);
-         auto& escape_char = *next(begin(subrange));
-         switch (escape_char) {
-         case 'b':
-            escape_char = '\b';
-            break;
-         case 'f':
-            escape_char = '\f';
-            break;
-         case 'n':
-            escape_char = '\n';
-            break;
-         case 'r':
-            escape_char = '\r';
-            break;
-         case 't':
-            escape_char = '\t';
-            break;
-         case '\'':
-            escape_char = '\'';
-            break;
-         case '\"':
-            escape_char = '\"';
-            break;
-         case '\\':
-            escape_char = '\\';
-            break;
+      for (auto i = begin(string_literal); i != end(string_literal); ++i) {
+         if (*i == '\\') {
+            if (auto escape_char = next(i); escape_char != end(string_literal)) {
+               switch (*escape_char) {
+               case 'b':
+                  *escape_char = '\b';
+                  break;
+               case 'f':
+                  *escape_char = '\f';
+                  break;
+               case 'n':
+                  *escape_char = '\n';
+                  break;
+               case 'r':
+                  *escape_char = '\r';
+                  break;
+               case 't':
+                  *escape_char = '\t';
+                  break;
+               case '\'':
+                  *escape_char = '\'';
+                  break;
+               case '\"':
+                  *escape_char = '\"';
+                  break;
+               case '\\':
+                  *escape_char = '\\';
+                  break;
+               }
+            }
          }
-      };
+      }
 
-      // the first subrange doesn't have any *legal* escapes, so we can just ignore it.
-      auto escapes = string_literal | view::split(is_escape) | view::drop(1);
-      for_each(escapes, transform_escape);
       erase_backslashes(string_literal);
    }
 
@@ -171,8 +150,6 @@ namespace {
 } // namespace
 
 namespace ltcpp::detail_lexer {
-   using namespace ranges;
-
    token scan_string_literal(std::istream& in, source_coordinate const cursor) noexcept
    {
       auto string_body = ::scan_string_literal(in);
