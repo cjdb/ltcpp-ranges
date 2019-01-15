@@ -72,6 +72,7 @@ namespace ltcpp {
       double_,
       int_,
       string_,
+      void_,
       // keywords
       break_,
       const_,

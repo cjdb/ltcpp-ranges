@@ -99,16 +99,10 @@ namespace ltcpp {
       {
          return source_coordinate{
             column_type{
-                 [&x, &y]{
-                    if (y.line() == line_type{0})
-                       return x.column() + y.column();
-                    else if (y.column() > column_type{0})
-                       return y.column();
-                    else
-                       return column_type{1};
-                 }()
-            },
-            line_type{x.line() + y.line()}
+                 line_type{0}   == y.line()   ? x.column() + y.column()
+               : column_type{0} <  y.column() ? y.column()
+                                              : column_type{1}
+            }
          };
       }
    private:
