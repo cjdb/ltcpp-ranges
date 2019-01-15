@@ -26,6 +26,7 @@
 #include "ltcpp/reporter.hpp"
 #include "ltcpp/source_coordinate.hpp"
 #include "ltcpp/lexer/token.hpp"
+#include <string_view>
 
 namespace {
    using ltcpp::token, ltcpp::token_kind, ltcpp::reporter, ltcpp::source_coordinate;
@@ -34,17 +35,15 @@ namespace {
 
    void check_for_error(reporter& report, token const& t) noexcept(false)
    {
-      if (t.kind() == token_kind::exponent_lacking_digit) {
-         report.error(pass::lexical, t.position().begin,
-            "floating-point exponent lacking digits: \"", t.spelling(), "\".");
-      }
-      else if (t.kind() == token_kind::too_many_radix_points) {
-         report.error(pass::lexical, t.position().begin,
-            "too many radix points in floating-point literal: \"", t.spelling(), "\".");
-      }
-      else if (t.kind() == ltcpp::token_kind::unterminated_string_literal) {
-         report.error(pass::lexical, t.position().end,
-            "unterminated string literal: \"", t.spelling(), "\".");
+      using namespace std::string_view_literals;
+      auto const message =
+         t.kind() == token_kind::exponent_lacking_digit      ? "floating-point exponent lacking digits: \""sv
+       : t.kind() == token_kind::too_many_radix_points       ? "too many radix points in floating-point literal: \""sv
+       : t.kind() == token_kind::unterminated_string_literal ? "unterminated string literal: \""sv
+       : t.kind() == token_kind::unknown_token               ? "unknown token: \""sv
+                                                             : ""sv;
+      if (not empty(message)) {
+         report.error(pass::lexical, t.position().begin, message, t.spelling(), "\".");
       }
       else {
          return;
@@ -80,7 +79,9 @@ namespace {
       }
       else if (auto current = '\0'; in.get(current)) {
          assert(cursor_result);
-         return lexer::scan_symbol(in, current, *cursor_result);
+         auto result = lexer::scan_symbol(in, current, *cursor_result);
+         check_for_error(report, result);
+         return result;
       }
       else if (in.eof()) {
          auto eof_cursor = source_coordinate{};
