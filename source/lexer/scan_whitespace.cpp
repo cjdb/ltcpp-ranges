@@ -26,7 +26,7 @@
 #include <range/v3/algorithm/adjacent_find.hpp>
 #include <range/v3/algorithm/count_if.hpp>
 #include <range/v3/numeric/accumulate.hpp>
-#include <range/v3/iterator_range.hpp>
+#include <range/v3/view/subrange.hpp>
 #include <range/v3/to_container.hpp>
 #include <range/v3/view/generate.hpp>
 #include <range/v3/view/take_while.hpp>
@@ -57,7 +57,7 @@ namespace ltcpp::detail_lexer {
    expected cursor_delta(std::string_view const code_points) noexcept
    {
       auto const reversed_code_points = code_points | view::reverse;
-      auto const last_line = iterator_range{
+      auto const last_line = subrange{
          adjacent_find(reversed_code_points, cjdb::is_newline).base(),
          end(code_points)
       };

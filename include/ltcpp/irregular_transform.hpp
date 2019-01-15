@@ -21,8 +21,8 @@
 #include <utility>
 
 namespace ltcpp {
-   inline auto irregular_transform = [](auto f){
-      return ranges::view::for_each([f=std::move(f)](auto&& r){
+   inline auto irregular_transform = [](auto&& f) {
+      return ranges::view::for_each([f=std::forward<decltype(f)>(f)](auto&& r) {
          return ranges::view::single(f(std::forward<decltype(r)>(r)));
       });
    };

@@ -104,6 +104,7 @@ namespace {
          {"double", token_kind::double_},
          {"int",    token_kind::int_},
          {"string", token_kind::string_},
+         {"void",   token_kind::void_},
          // keywords
          {"break",    token_kind::break_},
          {"const",    token_kind::const_},

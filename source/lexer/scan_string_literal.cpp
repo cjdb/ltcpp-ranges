@@ -30,12 +30,16 @@
 #include <range/v3/view/split.hpp>
 #include <string>
 #include <string_view>
+#include <iostream>
+#include <range/v3/algorithm/copy.hpp>
+#include <range/v3/utility/iterator.hpp>
 
 namespace {
    using namespace ranges;
    using namespace std::string_view_literals;
 
    constexpr auto legal_escapes = R"(bfnrt\'")"sv;
+   constexpr auto escape_literals = "\b\f\n\r\t\\'\""sv;
 
    /// \brief A predicate that determines if two elements in a string are an escape sequence.
    ///
@@ -117,32 +121,7 @@ namespace {
       auto transform_escape = [](auto&& subrange) noexcept {
          Expects(distance(subrange) >= 2);
          auto& escape_char = *next(begin(subrange));
-         switch (escape_char) {
-         case 'b':
-            escape_char = '\b';
-            break;
-         case 'f':
-            escape_char = '\f';
-            break;
-         case 'n':
-            escape_char = '\n';
-            break;
-         case 'r':
-            escape_char = '\r';
-            break;
-         case 't':
-            escape_char = '\t';
-            break;
-         case '\'':
-            escape_char = '\'';
-            break;
-         case '\"':
-            escape_char = '\"';
-            break;
-         case '\\':
-            escape_char = '\\';
-            break;
-         }
+         escape_char = escape_literals[legal_escapes.find(escape_char)];
       };
 
       // the first subrange doesn't have any *legal* escapes, so we can just ignore it.
