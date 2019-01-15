@@ -14,9 +14,6 @@
 // limitations under the License.
 //
 #include <istream>
-#include <range/v3/istream_range.hpp>
-#include <range/v3/view/take_while.hpp>
-#include <range/v3/to_container.hpp>
 #include <string>
 #include <utility>
 
@@ -26,9 +23,10 @@ namespace ltcpp {
          template<class F>
          std::string operator()(std::istream& in, F pred) const
          {
-            auto sequence = ranges::istream_range<char>(in)
-                          | ranges::view::take_while(std::move(pred))
-                          | ranges::to_<std::string>();
+            auto sequence = std::string{};
+            for (auto c = '\0'; in.get(c) and pred(c);) {
+               sequence += c;
+            }
             if (in) {
                in.unget(); // take_while consumes an extra character
             }
