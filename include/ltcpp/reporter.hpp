@@ -53,6 +53,7 @@ namespace ltcpp {
          ++errors_;
          *out_ << tag << " error at " << cursor << ": ";
          (*out_ << ... << std::forward<Args>(args));
+         *out_ << '\n';
       }
 
       template<class... Args>
@@ -62,6 +63,7 @@ namespace ltcpp {
          ++warnings_;
          *out_ << tag << " warning at " << cursor << ": ";
          (*out_ << ... << std::forward<Args>(args));
+         *out_ << '\n';
       }
 
       std::intmax_t errors() const noexcept

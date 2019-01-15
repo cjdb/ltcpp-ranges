@@ -18,46 +18,36 @@ build_test(
    "${prefix}"
    scan_identifier
    ${enable_catch2}
-   # PUBLIC_LIBRARIES
+   # PRIVATE_LIBRARIES
       source.lexer.scan_identifier
       source.lexer.token)
 build_test(
    "${prefix}"
    scan_number
    ${enable_catch2}
-   # PUBLIC_LIBRARIES
+   # PRIVATE_LIBRARIES
       source.lexer.scan_number
       source.lexer.token)
 build_test(
    "${prefix}"
    scan_symbol
    ${enable_catch2}
-   # PUBLIC_LIBRARIES
+   # PRIVATE_LIBRARIES
       source.lexer.scan_symbol
       source.lexer.token)
 build_test(
    "${prefix}"
    scan_string_literal
    ${enable_catch2}
-   # PUBLIC_LIBRARIES
+   # PRIVATE_LIBRARIES
       source.lexer.scan_string_literal
       source.lexer.token)
 build_test(
    "${prefix}"
    scan_whitespace
    ${enable_catch2}
-   # PUBLIC_LIBRARIES
+   # PRIVATE_LIBRARIES
       source.lexer.scan_whitespace
       source.lexer.token)
-build_test(
-   "${prefix}"
-   lexer
-   ${enable_catch2}
-   # PUBLIC_LIBRARIES
-      source.lexer.lexer
-      source.lexer.scan_identifier
-      source.lexer.scan_number
-      source.lexer.scan_string_literal
-      source.lexer.scan_symbol
-      source.lexer.scan_whitespace
-      source.lexer.token)
+
+add_subdirectory(lexer)
