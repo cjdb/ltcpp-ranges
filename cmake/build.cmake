@@ -59,7 +59,6 @@ function(build_impl target libraries)
          -Wsign-promo
          -Wmisleading-indentation
          -Wunused
-         -Wuseless-cast
          -Wformat=2
          -Wodr
          -Wno-attributes>
@@ -75,6 +74,7 @@ function(build_impl target libraries)
             -fstack-protector-all>
          -fdiagnostics-color=always
          -fconcepts>)
+   target_compile_options("${target}" PRIVATE)
 
    target_include_directories("${target}" PUBLIC "${PROJECT_SOURCE_DIR}/include")
 
@@ -133,30 +133,22 @@ function(build_library prefix file)
    build_impl("${target}" "${libraries}")
 endfunction()
 
-set(enable_catch2 On)
-set(disable_catch2 Off)
-
 # \brief Builds a test executable and creates a test target (for CTest).
 # \param prefix A string that prefixes the filename that will be removed from its path. Everything
 #               that prefixes the prefix will _also_ be removed.
 # \param file The name of the source file.
-# \param catch2_enabled A boolean to determine if Catch2 should be linked or not.
 #
-function(build_test prefix file catch2_enabled)
+function(build_test prefix file)
    name_target("${prefix}" "${file}")
    name_target("${prefix}" "${file}")
    add_executable("${target}" "${file}.cpp")
 
    set(libraries "")
-   if(${ARGC} GREATER 3)
+   if(${ARGC} GREATER 2)
       set(libraries ${ARGV})
-      list(SUBLIST libraries 3 ${ARGC} libraries)
+      list(SUBLIST libraries 2 ${ARGC} libraries)
    endif()
    build_impl("${target}" "${libraries}")
-
-   if(catch2_enabled)
-      target_link_libraries("${target}" PRIVATE "ltcpp.test.catch2_main")
-   endif()
 
    add_test("test.${target}" "${target}")
 endfunction()
@@ -165,7 +157,6 @@ endfunction()
 # \param prefix A string that prefixes the filename that will be removed from its path. Everything
 #               that prefixes the prefix will _also_ be removed.
 # \param file The name of the source file.
-# \param catch2_enabled A boolean to determine if Catch2 should be linked or not.
 #
 function(build_benchmark prefix file)
    build_executable(${ARGV})

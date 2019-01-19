@@ -16,7 +16,6 @@
 build_test(
    "${prefix}"
    line1-column1
-   ${enable_catch2}
    # PRIVATE_LIBRARIES
       source.lexer.lexer
       source.lexer.scan_identifier
@@ -28,7 +27,6 @@ build_test(
 build_test(
    "${prefix}"
    line2-column1
-   ${enable_catch2}
    # PRIVATE_LIBRARIES
       source.lexer.lexer
       source.lexer.scan_identifier
@@ -40,7 +38,6 @@ build_test(
 build_test(
    "${prefix}"
    radix-point-error
-   ${enable_catch2}
    # PRIVATE_LIBRARIES
       source.lexer.lexer
       source.lexer.scan_identifier
@@ -52,7 +49,6 @@ build_test(
 build_test(
    "${prefix}"
    missing-exponent-errors
-   ${enable_catch2}
    # PRIVATE_LIBRARIES
       source.lexer.lexer
       source.lexer.scan_identifier
@@ -64,7 +60,6 @@ build_test(
 build_test(
    "${prefix}"
    unterminated-comment
-   ${enable_catch2}
    # PRIVATE_LIBRARIES
       source.lexer.lexer
       source.lexer.scan_identifier
@@ -76,7 +71,6 @@ build_test(
 build_test(
    "${prefix}"
    unterminated-string
-   ${enable_catch2}
    # PRIVATE_LIBRARIES
       source.lexer.lexer
       source.lexer.scan_identifier

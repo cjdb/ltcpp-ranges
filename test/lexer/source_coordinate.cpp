@@ -15,17 +15,19 @@
 //
 #include "ltcpp/source_coordinate.hpp"
 
+#include "../simple_test.hpp"
 #include "cjdb/concepts/core/defaultconstructible.hpp"
 #include "cjdb/concepts/core/integral.hpp"
 #include "cjdb/concepts/core/same.hpp"
 #include "cjdb/concepts/object/regular.hpp"
 #include "cjdb/functional/rangecmp/equal_to.hpp"
 #include "cjdb/test/check_equivalence.hpp"
-#include <catch2/catch.hpp>
 #include <sstream>
 #include <type_traits>
 
-TEST_CASE("Tests the source coordinate") {
+int main()
+{
+   // Tests the source coordinate
    using ltcpp::source_coordinate;
 
    static_assert(not cjdb::Integral<source_coordinate::column_type>);
@@ -33,13 +35,13 @@ TEST_CASE("Tests the source coordinate") {
    static_assert(not cjdb::Same<source_coordinate::column_type, source_coordinate::line_type>);
    static_assert(cjdb::Regular<source_coordinate>);
 
-   SECTION("Default constructed source_coordinate") {
+   { // Default constructed source_coordinate
       constexpr auto cursor = source_coordinate{};
       static_assert(cursor.column() == source_coordinate::column_type{1});
       static_assert(cursor.line() == source_coordinate::line_type{1});
    }
 
-   SECTION("Explicitly constructed source_coordinate") {
+   { // Explicitly constructed source_coordinate
       constexpr auto column = 42;
       constexpr auto line = 35;
 
@@ -51,8 +53,8 @@ TEST_CASE("Tests the source coordinate") {
       static_assert(cursor.line() == source_coordinate::line_type{line});
    }
 
-   SECTION("Check source_coordinate models EqualityComparable at runtime") {
-      SECTION("Check == is an equivalence relation") {
+   { // Check source_coordinate models EqualityComparable at runtime
+      { // Check == is an equivalence relation
          constexpr auto x = source_coordinate{
             source_coordinate::column_type{5},
             source_coordinate::line_type{6},
@@ -71,7 +73,7 @@ TEST_CASE("Tests the source coordinate") {
          static_assert(not (x != y));
       }
 
-      SECTION("column and line are different") {
+      { // column and line are different
          constexpr auto first = source_coordinate{
             source_coordinate::column_type{30},
             source_coordinate::line_type{40}
@@ -88,7 +90,7 @@ TEST_CASE("Tests the source coordinate") {
          static_assert(second != first);
       }
 
-      SECTION("column same, line different") {
+      { // column same, line different
          constexpr auto column = 30;
 
          constexpr auto first = source_coordinate{
@@ -106,7 +108,7 @@ TEST_CASE("Tests the source coordinate") {
          static_assert(first != second);
       }
 
-      SECTION("column different, line same") {
+      { // column different, line same
          constexpr auto line = 30;
 
          constexpr auto first = source_coordinate{
@@ -125,7 +127,7 @@ TEST_CASE("Tests the source coordinate") {
       }
    }
 
-   SECTION("Check source_coordinate motion is correct") {
+   { // Check source_coordinate motion is correct
       constexpr auto xcol = 5;
       constexpr auto xline = 32;
       constexpr auto x = source_coordinate{
@@ -133,7 +135,7 @@ TEST_CASE("Tests the source coordinate") {
          source_coordinate::line_type{xline}
       };
 
-      SECTION("When y.column() == 0") {
+      { // When y.column() == 0
          constexpr auto ycol = 0;
          constexpr auto yline = 76;
          constexpr auto y = source_coordinate{
@@ -152,7 +154,7 @@ TEST_CASE("Tests the source coordinate") {
          static_assert(result == expected);
       }
 
-      SECTION("When y.line() == 0") {
+      { // When y.line() == 0
          constexpr auto ycol = 25;
          constexpr auto yline = 0;
          constexpr auto y = source_coordinate{
@@ -171,7 +173,7 @@ TEST_CASE("Tests the source coordinate") {
          static_assert(result == expected);
       }
 
-      SECTION("When y.column() != 0 and y.line() != 0") {
+      { // When y.column() != 0 and y.line() != 0
          constexpr auto ycol = 32;
          constexpr auto yline = 23;
          constexpr auto y = source_coordinate{
@@ -188,20 +190,20 @@ TEST_CASE("Tests the source coordinate") {
       }
    }
 
-   SECTION("Check ostream operators are correct") {
-      SECTION("Check column") {
+   { // Check ostream operators are correct
+      { // Check column
          constexpr auto column = source_coordinate::column_type{28};
          auto out = std::ostringstream{};
          out << column;
          CHECK(out.str() == "28");
       }
-      SECTION("Check line") {
+      { // Check line
          constexpr auto line = source_coordinate::line_type{32};
          auto out = std::ostringstream{};
          out << line;
          CHECK(out.str() == "32");
       }
-      SECTION("Check source_coordinate") {
+      { // Check source_coordinate
          constexpr auto cursor = source_coordinate{
             source_coordinate::column_type{4},
             source_coordinate::line_type{10},
@@ -212,4 +214,6 @@ TEST_CASE("Tests the source coordinate") {
          CHECK(out.str() == "{10:4}");
       }
    }
+
+   return ::test_result();
 }

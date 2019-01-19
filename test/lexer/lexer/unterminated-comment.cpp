@@ -18,12 +18,13 @@
 #include "ltcpp/source_coordinate.hpp"
 #include "ltcpp/reporter.hpp"
 
-#include <catch2/catch.hpp>
 #include <string>
 #include <sstream>
 #include "./test_common.hpp"
 
-TEST_CASE("Unterminated comment") {
+int main()
+{
+   // Unterminated comment
    using ltcpp::token, ltcpp::token_kind, ltcpp::source_coordinate;
    using column_type = source_coordinate::column_type;
    using line_type = source_coordinate::line_type;
@@ -64,4 +65,6 @@ TEST_CASE("Unterminated comment") {
    CHECK(report.errors() == 1);
    CHECK(report.warnings() == 0);
    CHECK(errors.str() == "lexical error at {1:9}: unterminated multi-line comment.\n");
+
+   return ::test_result();
 }

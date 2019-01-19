@@ -16,7 +16,8 @@
 #ifndef TEST_LEXER_LEXER_TEST_COMMON_HPP
 #define TEST_LEXER_LEXER_TEST_COMMON_HPP
 
-#include <catch2/catch.hpp>
+#include "../../simple_test.hpp"
+#include <cassert>
 #include <ios>
 #include <iterator>
 #include "ltcpp/lexer/lexer.hpp"
@@ -29,14 +30,14 @@
 #include <vector>
 
 #define CHECK_EQUAL(actual, expected) {       \
-   REQUIRE(size(actual) == size(expected));   \
+   assert(size(actual) == size(expected));    \
    for (auto i = 0U; i < size(actual); ++i) { \
       CHECK(actual[i] == expected[i]);        \
    }                                          \
 }                                             \
 
 
-std::vector<ltcpp::token> generate_tokens(std::string const& source, ltcpp::reporter& report)
+inline std::vector<ltcpp::token> generate_tokens(std::string const& source, ltcpp::reporter& report)
 {
    auto in = std::istringstream{source};
    in.unsetf(std::ios_base::skipws);

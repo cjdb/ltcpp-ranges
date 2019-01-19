@@ -17,9 +17,10 @@
 #include "ltcpp/lexer/token.hpp"
 
 #include "./check_scan.hpp"
-#include <catch2/catch.hpp>
 
-TEST_CASE("Check symbols are scanned correctly") {
+int main()
+{
+   // Check symbols are scanned correctly
    using ltcpp::token_kind;
    using namespace std::string_literals;
    using namespace std::string_view_literals;
@@ -32,7 +33,7 @@ TEST_CASE("Check symbols are scanned correctly") {
    CHECK_SCAN(scan_symbol, "++", token_kind::increment, ""sv);
    CHECK_SCAN(scan_symbol, "--", token_kind::decrement, ""sv);
 
-   SECTION("arithmetic") {
+   { // arithmetic
       CHECK_SCAN(scan_symbol, "+", token_kind::plus, ""sv);
       CHECK_SCAN(scan_symbol, "-", token_kind::minus, ""sv);
       CHECK_SCAN(scan_symbol, "*", token_kind::times, ""sv);
@@ -40,7 +41,7 @@ TEST_CASE("Check symbols are scanned correctly") {
       CHECK_SCAN(scan_symbol, "%", token_kind::modulo, ""sv);
    }
 
-   SECTION("assignment") {
+   { // assignment
       CHECK_SCAN(scan_symbol, "=", token_kind::assign, ""sv);
       CHECK_SCAN(scan_symbol, "+=", token_kind::plus_eq, ""sv);
       CHECK_SCAN(scan_symbol, "-=", token_kind::minus_eq, ""sv);
@@ -49,7 +50,7 @@ TEST_CASE("Check symbols are scanned correctly") {
       CHECK_SCAN(scan_symbol, "%=", token_kind::modulo_eq, ""sv);
    }
 
-   SECTION("comparison") {
+   { // comparison
       CHECK_SCAN(scan_symbol, "==", token_kind::equal_to, ""sv);
       CHECK_SCAN(scan_symbol, "!=", token_kind::not_equal_to, ""sv);
       CHECK_SCAN(scan_symbol, "<", token_kind::less, ""sv);
@@ -58,7 +59,7 @@ TEST_CASE("Check symbols are scanned correctly") {
       CHECK_SCAN(scan_symbol, ">=", token_kind::greater_equal, ""sv);
    }
 
-   SECTION("separators") {
+   { // separators
       CHECK_SCAN(scan_symbol, ".", token_kind::dot, ""sv);
       CHECK_SCAN(scan_symbol, ",", token_kind::comma, ""sv);
       CHECK_SCAN(scan_symbol, ";", token_kind::semicolon, ""sv);
@@ -70,13 +71,13 @@ TEST_CASE("Check symbols are scanned correctly") {
       CHECK_SCAN(scan_symbol, "]", token_kind::square_close, ""sv);
    }
 
-   SECTION("Check tokens with strange ends to ensure they only conform to the first token.") {
+   { // Check tokens with strange ends to ensure they only conform to the first token.
       CHECK_SCAN(scan_symbol, "+ =", token_kind::plus, "+"sv);
       CHECK_SCAN(scan_symbol, "+-", token_kind::plus, "+"sv);
       CHECK_SCAN(scan_symbol, "%%", token_kind::modulo, "%"sv);
    }
 
-   SECTION("Check non-existing tokens") {
+   { // Check non-existing tokens
       CHECK_SCAN(scan_symbol, "@", token_kind::unknown_token, ""sv);
       CHECK_SCAN(scan_symbol, "#", token_kind::unknown_token, ""sv);
       CHECK_SCAN(scan_symbol, "$", token_kind::unknown_token, ""sv);
@@ -87,4 +88,6 @@ TEST_CASE("Check symbols are scanned correctly") {
       CHECK_SCAN(scan_symbol, "\\", token_kind::unknown_token, ""sv);
       CHECK_SCAN(scan_symbol, "?", token_kind::unknown_token, ""sv);
    }
+
+   return ::test_result();
 }

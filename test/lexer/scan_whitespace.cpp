@@ -17,7 +17,7 @@
 #include "ltcpp/lexer/token.hpp"
 
 #include "./check_scan.hpp"
-#include <catch2/catch.hpp>
+#include <cassert>
 #include <iterator>
 #include <sstream>
 #include <string>
@@ -26,8 +26,8 @@
    auto in = std::istringstream{spaces};                                                           \
    in.unsetf(std::ios_base::skipws);                                                               \
    auto result = scan_whitespace_like(in, coord);                                                  \
-   CHECK(not result.second);                                                                       \
-   CHECK(result.first == expected);                                                                \
+   assert(result);                                                                                 \
+   CHECK(*result == expected);                                                                     \
 }                                                                                                  \
 
 template<class R>
@@ -54,7 +54,9 @@ auto distance(R&& r)
 }                                                                                                  \
 
 
-TEST_CASE("Check numbers can be correctly scanned in") {
+int main()
+{
+   // Check numbers can be correctly scanned in
    using ltcpp::source_coordinate;
    using ltcpp::detail_lexer::scan_whitespace_like;
    using column_type = source_coordinate::column_type;
@@ -62,21 +64,21 @@ TEST_CASE("Check numbers can be correctly scanned in") {
    using namespace std::string_literals;
    using namespace std::string_view_literals;
 
-   CHECK_SCAN_WHITESPACE("", column_type{0}, line_type{0});
-   SECTION("Scan spaces") {
-      CHECK_SCAN_WHITESPACE(" ", column_type{1}, line_type{0});
-      CHECK_SCAN_WHITESPACE("  ", column_type{2}, line_type{0});
-      CHECK_SCAN_WHITESPACE("  a", column_type{2}, line_type{0});
+   CHECK_SCAN_WHITESPACE("", line_type{0}, column_type{0});
+   { // Scan spaces
+      CHECK_SCAN_WHITESPACE(" ", line_type{0}, column_type{1});
+      CHECK_SCAN_WHITESPACE("  ", line_type{0}, column_type{2});
+      CHECK_SCAN_WHITESPACE("  a", line_type{0}, column_type{2});
    }
-   SECTION("Scan tabs") {
-      CHECK_SCAN_WHITESPACE("\t", column_type{1}, line_type{0});
-      CHECK_SCAN_WHITESPACE("\t\t", column_type{2}, line_type{0});
-      CHECK_SCAN_WHITESPACE("\t\tthough\tful", column_type{2}, line_type{0});
+   { // Scan tabs
+      CHECK_SCAN_WHITESPACE("\t", line_type{0}, column_type{1});
+      CHECK_SCAN_WHITESPACE("\t\t", line_type{0}, column_type{2});
+      CHECK_SCAN_WHITESPACE("\t\tthough\tful", line_type{0}, column_type{2});
    }
-   SECTION("Scan new lines") {
-      CHECK_SCAN_WHITESPACE("\n", column_type{0}, line_type{1});
-      CHECK_SCAN_WHITESPACE("\n\n", column_type{0}, line_type{2});
-      CHECK_SCAN_WHITESPACE("\n\ncare bear cou\n\tdown", column_type{0}, line_type{2});
+   { // Scan new lines
+      CHECK_SCAN_WHITESPACE("\n", line_type{1}, column_type{0});
+      CHECK_SCAN_WHITESPACE("\n\n", line_type{2}, column_type{0});
+      CHECK_SCAN_WHITESPACE("\n\ncare bear cou\n\tdown", line_type{2}, column_type{0});
 
       CHECK_SCAN_WHITESPACE("\r\nelectrode diglett \nido\ran mankey", column_type{0}, line_type{1});
       CHECK_SCAN_WHITESPACE("\r\n\r\n", column_type{0}, line_type{2});
@@ -85,23 +87,23 @@ TEST_CASE("Check numbers can be correctly scanned in") {
       CHECK_SCAN_WHITESPACE("\n\r", column_type{0}, line_type{1});
       CHECK_SCAN_WHITESPACE("\n\r\n\rthe\re's a s\nake in my boo\t!", column_type{0}, line_type{2});
    }
-   SECTION("Scan carriage returns") {
-      CHECK_SCAN_WHITESPACE("\r", column_type{1}, line_type{0});
-      CHECK_SCAN_WHITESPACE("\r\r", column_type{2}, line_type{0});
-      CHECK_SCAN_WHITESPACE("\r\rregiice \regirock \registeel", column_type{2}, line_type{0});
+   { // Scan carriage returns
+      CHECK_SCAN_WHITESPACE("\r", line_type{0}, column_type{1});
+      CHECK_SCAN_WHITESPACE("\r\r", line_type{0}, column_type{2});
+      CHECK_SCAN_WHITESPACE("\r\rregiice \regirock \registeel", line_type{0}, column_type{2});
    }
-   SECTION("Scan form feeds") {
-      CHECK_SCAN_WHITESPACE("\f", column_type{0}, line_type{1});
-      CHECK_SCAN_WHITESPACE("\f\f", column_type{0}, line_type{2});
-      CHECK_SCAN_WHITESPACE("\f\f\n", column_type{0}, line_type{3});
-      CHECK_SCAN_WHITESPACE("\f\f\r\n", column_type{0}, line_type{3});
-      CHECK_SCAN_WHITESPACE("\f\f\n\r", column_type{0}, line_type{3});
-      CHECK_SCAN_WHITESPACE("\f\f", column_type{0}, line_type{2});
-      CHECK_SCAN_WHITESPACE("\flord \farquad", column_type{0}, line_type{1});
+   { // Scan form feeds
+      CHECK_SCAN_WHITESPACE("\f", line_type{1}, column_type{0});
+      CHECK_SCAN_WHITESPACE("\f\f", line_type{2}, column_type{0});
+      CHECK_SCAN_WHITESPACE("\f\f\n", line_type{3}, column_type{0});
+      CHECK_SCAN_WHITESPACE("\f\f\r\n", line_type{3}, column_type{0});
+      CHECK_SCAN_WHITESPACE("\f\f\n\r", line_type{3}, column_type{0});
+      CHECK_SCAN_WHITESPACE("\f\f", line_type{2}, column_type{0});
+      CHECK_SCAN_WHITESPACE("\flord \farquad", line_type{1}, column_type{0});
    }
 
-   SECTION("Scan single-line comment") {
-      CHECK_SCAN_WHITESPACE("//", column_type{2}, line_type{0});
+   { // Scan single-line comment
+      CHECK_SCAN_WHITESPACE("//", line_type{0}, column_type{2});
 
       constexpr auto hello_world = "// hello world!"sv;
       CHECK_SCAN_WHITESPACE(hello_world, column_type{distance(hello_world)}, line_type{0});
@@ -113,8 +115,8 @@ TEST_CASE("Check numbers can be correctly scanned in") {
                                            "//\tworld\r\n"sv;
       CHECK_SCAN_WHITESPACE(hello_lf_world_crlf, column_type{0}, line_type{2});
    }
-   SECTION("Scan multi-line comment") {
-      SECTION("Well-formed comments") {
+   { // Scan multi-line comment
+      { // Well-formed comments
          constexpr auto empty = "/**/"sv;
          CHECK_SCAN_WHITESPACE(empty, column_type{distance(empty)}, line_type{0});
          CHECK_SCAN_WHITESPACE("/**/alakazam", column_type{distance(empty)}, line_type{0});
@@ -130,7 +132,7 @@ TEST_CASE("Check numbers can be correctly scanned in") {
          constexpr auto fake_end = "/*/ hahaha */"sv;
          CHECK_SCAN_WHITESPACE(fake_end, column_type{distance(fake_end)}, line_type{0});
       }
-      SECTION("Unterminated comment") {
+      { // Unterminated comment
          auto comment = "\n"
                         "   /* this is the comment that never ends,\n"
                         "      it just goes on and on, my friend,\n"
@@ -140,9 +142,12 @@ TEST_CASE("Check numbers can be correctly scanned in") {
          auto in = std::istringstream{comment};
          in.unsetf(std::ios_base::skipws);
          auto result = scan_whitespace_like(in, source_coordinate{});
-         REQUIRE(in.eof());
-         CHECK(result.second);
-         CHECK(result.first == source_coordinate{column_type{4}, line_type{2}});
+         assert(in.eof());
+         assert(not result);
+         CHECK(result.error().begin == source_coordinate{line_type{2}, column_type{4}});
+         CHECK(result.error().end == source_coordinate{line_type{7}, column_type{1}});
       }
    }
+
+   return ::test_result();
 }

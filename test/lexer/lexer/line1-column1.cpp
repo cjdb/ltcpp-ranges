@@ -18,12 +18,13 @@
 #include "ltcpp/source_coordinate.hpp"
 #include "ltcpp/reporter.hpp"
 
-#include <catch2/catch.hpp>
 #include <string>
 #include <sstream>
 #include "./test_common.hpp"
 
-TEST_CASE("Check a program starting on Line 1, Column 1") {
+int main()
+{
+   // Check a program starting on Line 1, Column 1
    using ltcpp::token, ltcpp::token_kind, ltcpp::source_coordinate;
    using column_type = source_coordinate::column_type;
    using line_type = source_coordinate::line_type;
@@ -39,7 +40,7 @@ TEST_CASE("Check a program starting on Line 1, Column 1") {
    };
 
    auto tokens = generate_tokens(source, report);
-   REQUIRE(size(tokens) == 12);
+   assert(size(tokens) == 12);
 
    auto const expected_tokens = std::vector{
       token{
@@ -120,4 +121,6 @@ TEST_CASE("Check a program starting on Line 1, Column 1") {
    CHECK(report.errors() == 0);
    CHECK(report.warnings() == 0);
    CHECK(empty(errors.str()));
+
+   return ::test_result();
 }

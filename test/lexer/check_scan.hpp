@@ -18,7 +18,7 @@
 
 #include "ltcpp/lexer/token.hpp"
 #include "ltcpp/source_coordinate.hpp"
-#include <catch2/catch.hpp>
+#include "../simple_test.hpp"
 #include <iterator>
 #include <sstream>
 #include <string>

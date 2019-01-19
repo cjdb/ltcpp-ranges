@@ -17,17 +17,18 @@
 #include "ltcpp/lexer/token.hpp"
 
 #include "./check_scan.hpp"
-#include <catch2/catch.hpp>
 #include <string>
 #include <string_view>
 
-TEST_CASE("Check string literals") {
+int main()
+{
+   // Check string literals
    using ltcpp::token_kind;
    using ltcpp::detail_lexer::scan_string_literal;
    using namespace std::string_literals;
    using namespace std::string_view_literals;
 
-   SECTION("Well-formed string literals") {
+   { // Well-formed string literals
       CHECK_SCAN(scan_string_literal, R"("")", token_kind::string_literal, ""sv);
       CHECK_SCAN(scan_string_literal, R"("hello")", token_kind::string_literal, ""sv);
       CHECK_SCAN(scan_string_literal, R"("hello\bworld")", token_kind::string_literal,
@@ -48,15 +49,18 @@ TEST_CASE("Check string literals") {
          R"("hello\world")"sv);
    }
 
-   SECTION("Unterminated string literals") {
+   { // Unterminated string literals
       CHECK_SCAN(scan_string_literal, R"("hello)", token_kind::unterminated_string_literal, ""sv);
       CHECK_SCAN(scan_string_literal, R"("hello\")", token_kind::unterminated_string_literal,
          R"("hello\")"sv);
    }
 
-   SECTION("Invalid escape sequences") {
+   { // Invalid escape sequences
       CHECK_SCAN(scan_string_literal, R"("\x")", token_kind::invalid_escape_sequence, ""sv);
       CHECK_SCAN(scan_string_literal, R"("hell\o")", token_kind::invalid_escape_sequence, ""sv);
-      CHECK_SCAN(scan_string_literal, R"("\thell\o")", token_kind::invalid_escape_sequence, ""sv);
+      CHECK_SCAN(scan_string_literal, R"("o\thell\o")", token_kind::invalid_escape_sequence, ""sv);
+      CHECK_SCAN(scan_string_literal, R"("\thell\\\o")", token_kind::invalid_escape_sequence, ""sv);
    }
+
+   return ::test_result();
 }

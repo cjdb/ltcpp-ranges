@@ -13,39 +13,34 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-build_test("${prefix}" source_coordinate ${enable_catch2})
+build_test("${prefix}" source_coordinate)
 build_test(
    "${prefix}"
    scan_identifier
-   ${enable_catch2}
    # PRIVATE_LIBRARIES
       source.lexer.scan_identifier
       source.lexer.token)
 build_test(
    "${prefix}"
    scan_number
-   ${enable_catch2}
    # PRIVATE_LIBRARIES
       source.lexer.scan_number
       source.lexer.token)
 build_test(
    "${prefix}"
    scan_symbol
-   ${enable_catch2}
    # PRIVATE_LIBRARIES
       source.lexer.scan_symbol
       source.lexer.token)
 build_test(
    "${prefix}"
    scan_string_literal
-   ${enable_catch2}
    # PRIVATE_LIBRARIES
       source.lexer.scan_string_literal
       source.lexer.token)
 build_test(
    "${prefix}"
    scan_whitespace
-   ${enable_catch2}
    # PRIVATE_LIBRARIES
       source.lexer.scan_whitespace
       source.lexer.token)

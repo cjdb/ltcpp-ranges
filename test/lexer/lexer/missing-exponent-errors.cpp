@@ -18,12 +18,13 @@
 #include "ltcpp/source_coordinate.hpp"
 #include "ltcpp/reporter.hpp"
 
-#include <catch2/catch.hpp>
 #include <string>
 #include <sstream>
 #include "./test_common.hpp"
 
-TEST_CASE("Floating-point literal with exponent suffix, but missing exponent") {
+int main()
+{
+   // Floating-point literal with exponent suffix, but missing exponent
    using ltcpp::token, ltcpp::token_kind, ltcpp::source_coordinate;
    using column_type = source_coordinate::column_type;
    using line_type = source_coordinate::line_type;
@@ -69,4 +70,6 @@ TEST_CASE("Floating-point literal with exponent suffix, but missing exponent") {
    CHECK(report.warnings() == 0);
    CHECK(errors.str() ==
       "lexical error at {1:5}: floating-point exponent lacking digits: \"543e\".\n");
+
+   return ::test_result();
 }

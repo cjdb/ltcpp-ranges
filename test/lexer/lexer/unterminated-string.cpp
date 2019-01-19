@@ -18,12 +18,13 @@
 #include "ltcpp/source_coordinate.hpp"
 #include "ltcpp/reporter.hpp"
 
-#include <catch2/catch.hpp>
 #include <string>
 #include <sstream>
 #include "./test_common.hpp"
 
-TEST_CASE("String literal not terminated") {
+int main()
+{
+   // String literal not terminated
    using ltcpp::token, ltcpp::token_kind, ltcpp::source_coordinate;
    using column_type = source_coordinate::column_type;
    using line_type = source_coordinate::line_type;
@@ -127,4 +128,6 @@ TEST_CASE("String literal not terminated") {
       "lexical error at {1:12}: unknown token: \"$\".\n"
       "lexical error at {5:7}: unterminated string literal: \"\"This string is not terminated.\".\n"
       "lexical error at {6:11}: unterminated string literal: \"\"This string is also not terminated\\\"\".\n");
+
+   return ::test_result();
 }

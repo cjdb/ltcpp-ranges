@@ -13,6 +13,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-add_library(ltcpp.test.catch2_main OBJECT catch2_main.cpp)
-target_link_libraries(ltcpp.test.catch2_main PUBLIC Catch2::Catch2)
 add_subdirectory(lexer)
