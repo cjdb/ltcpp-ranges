@@ -27,16 +27,19 @@
 #include <range/v3/view/drop.hpp>
 #include <range/v3/view/drop_while.hpp>
 #include <range/v3/view/slice.hpp>
-#include <range/v3/view/split.hpp>
+#include <range/v3/view/split_when.hpp>
 #include <string>
 #include <string_view>
 #include <iostream>
 #include <range/v3/algorithm/copy.hpp>
 #include <range/v3/utility/iterator.hpp>
 
+#include "ltcpp/utility/peek.hpp"
+
 namespace {
    using namespace ranges;
    using namespace std::string_view_literals;
+   using ltcpp::peek;
 
    constexpr auto legal_escapes = R"(bfnrt\'")"sv;
    constexpr auto escape_literals = "\b\f\n\r\t\\'\""sv;
@@ -47,7 +50,7 @@ namespace {
    /// \param first Iterator to the beginning of the range.
    /// \param last Sentinel denoting the end of the range.
    /// \returns A paired boolean and iterator to the backslash.
-   /// \note The return type is prescribed by split_view.
+   /// \note The return type is prescribed by split_when_view.
    ///
    auto is_escape = [](auto first, auto last) constexpr noexcept {
       auto result = false;
@@ -77,7 +80,7 @@ namespace {
       };
 
       auto invalid_escapes = lexeme
-                           | view::split(is_escape)
+                           | view::split_when(is_escape)
                            | view::drop_while(no_illegal_escapes);
 
       return empty(invalid_escapes) ? ltcpp::token_kind::string_literal
@@ -125,7 +128,7 @@ namespace {
       };
 
       // the first subrange doesn't have any *legal* escapes, so we can just ignore it.
-      auto escapes = string_literal | view::split(is_escape) | view::drop(1);
+      auto escapes = string_literal | view::split_when(is_escape) | view::drop(1);
       for_each(escapes, transform_escape);
       erase_backslashes(string_literal);
    }
@@ -140,9 +143,9 @@ namespace {
       do {
          string_body += static_cast<char>(in.get());
          string_body += ltcpp::consume_istream_while(in, not_string_literal_sentinel);
-      } while (in.peek() == '"' and string_body.back() == '\\');
+      } while (in.good() and in.peek() == '"' and string_body.back() == '\\');
 
-      if (in.peek() == '"') {
+      if (auto next = peek(in); next and *next == '"') {
          string_body += static_cast<char>(in.get());
       }
       return string_body;

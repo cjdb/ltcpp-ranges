@@ -22,7 +22,7 @@
 #include <tuple>
 
 namespace ltcpp {
-   class source_coordinate {
+   class [[nodiscard]] source_coordinate {
       struct column_tag {};
       struct line_tag {};
    public:

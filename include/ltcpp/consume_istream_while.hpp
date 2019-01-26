@@ -28,9 +28,13 @@ namespace ltcpp {
          {
             auto sequence = ranges::istream_range<char>(in)
                           | ranges::view::take_while(std::move(pred))
-                          | ranges::to_<std::string>();
-            if (in) {
+                          | ranges::to<std::string>();
+            if (in or in.eof()) {
+               auto const was_eof = in.eof();
                in.unget(); // take_while consumes an extra character
+               if (was_eof) {
+                  in.clear();
+               }
             }
             return sequence;
          }

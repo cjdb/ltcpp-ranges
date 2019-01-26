@@ -18,17 +18,19 @@
 #include <istream>
 #include <string>
 
+#include "ltcpp/utility/peek.hpp"
+
 namespace {
-   using ltcpp::token, ltcpp::source_coordinate, ltcpp::make_token;
+   using ltcpp::token, ltcpp::source_coordinate, ltcpp::make_token, ltcpp::peek;
 
    /// \brief Checks if a character is the beginning of a multi-character token.
    ///
    token possibly_token(std::istream& in, char const current, source_coordinate const cursor,
-      std::string const& candidates) noexcept
+      std::string const& candidates) noexcept(false)
    {
-      if (auto peek = static_cast<char>(in.peek()); in and candidates.find(peek) != std::string::npos) {
-         in.get(peek);
-         return make_token(std::string{current, peek}, cursor);
+      if (auto next = peek(in); next and candidates.find(*next) != std::string::npos) {
+         in.get(*next);
+         return make_token(std::string{current, *next}, cursor);
       }
       else {
          return make_token(std::string{current}, cursor);
@@ -39,8 +41,10 @@ namespace {
 namespace ltcpp::detail_lexer {
    /// \brief
    ///
-   token scan_symbol(std::istream& in, char const current, source_coordinate const cursor) noexcept
+   token scan_symbol(std::istream& in, source_coordinate const cursor) noexcept(false)
    {
+      auto current = '\0';
+      in.get(current);
       switch (current) {
       case '+': [[fallthrough]];
       case '-':

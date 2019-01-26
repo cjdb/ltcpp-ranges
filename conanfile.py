@@ -17,11 +17,11 @@ from conans import ConanFile, CMake, RunEnvironment, tools
 import os
 
 class Ltcpp(ConanFile):
-   name = "amcpp-gp2"
+   name = "ltcpp"
    version = "1.0"
    settings = "os", "compiler", "arch", "build_type"
    generators = "cmake", "cmake_paths", "virtualrunenv"
-   requires = "gsl_microsoft/[>=1.0.0]@bincrafters/stable", "range-v3/1.0.0@cjdb/stable", "expected-lite/0.2.0@cjdb/stable"
+   requires = "gsl_microsoft/[>=1.0.0]@bincrafters/stable", "range-v3/1.0.0@cjdb/stable"
    exports_sources = "CMakeLists.txt", ".clang*", "test/*", "src/*", "cmake/*"
    no_copy_source = True
 

@@ -17,6 +17,7 @@
 #define LTCPP_LEXER_TOKEN_HPP
 
 #include "ltcpp/source_coordinate.hpp"
+#include "ltcpp/source_coordinate_range.hpp"
 #include <ostream>
 #include <string>
 #include <tuple>
@@ -241,7 +242,7 @@ namespace ltcpp {
          source_coordinate end)
          : kind_{kind}
          , spelling_{std::move(spelling)}
-         , position_{begin, end}
+         , cursor_range_{begin, end}
       {}
 
       token_kind kind() const noexcept
@@ -250,8 +251,8 @@ namespace ltcpp {
       std::string_view spelling() const noexcept
       { return spelling_; }
 
-      source_coordinate_range position() const noexcept
-      { return position_; }
+      source_coordinate_range cursor_range() const noexcept
+      { return cursor_range_; }
 
       friend bool operator==(token const& a, token const& b) noexcept
       {
@@ -267,7 +268,7 @@ namespace ltcpp {
    private:
       token_kind kind_;
       std::string spelling_;
-      source_coordinate_range position_;
+      source_coordinate_range cursor_range_;
    };
 
    token make_token(std::string lexeme, source_coordinate cursor_begin) noexcept;

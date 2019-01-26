@@ -108,7 +108,7 @@ namespace ltcpp::detail_lexer {
             istream_range<char>(in) | view::take_while(cjdb::ranges::partial_not_equal_to{'*'})
          );
          comment += in.good() ? "*" : "";
-      } while (in and in.peek() != '/');
+      } while (in.good() and in.peek() != '/');
 
       if (in) {
          // take '/' from the stream or else it won't be consumed!

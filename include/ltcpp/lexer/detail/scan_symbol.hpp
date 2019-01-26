@@ -21,7 +21,7 @@
 #include <istream>
 
 namespace ltcpp::detail_lexer {
-   token scan_symbol(std::istream& in, char current, source_coordinate cursor) noexcept;
+   token scan_symbol(std::istream& in, source_coordinate cursor) noexcept(false);
 } // namespace ltcpp::detail_lexer
 
 #endif // LTCPP_LEXER_DETAIL_SCAN_STRING_SYMBOL_HPP

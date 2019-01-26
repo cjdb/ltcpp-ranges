@@ -21,7 +21,11 @@
 #include "ltcpp/consume_istream_while.hpp"
 #include <string>
 
+#include "ltcpp/utility/peek.hpp"
+
 namespace {
+   using ltcpp::peek;
+
    /// \brief
    /// \param in
    /// \param cursor The position in the source file where the identifier begins.
@@ -29,11 +33,11 @@ namespace {
    ///
    std::string scan_floating_exponent(std::istream& in) noexcept(false)
    {
-      if (auto c = in.peek(); std::toupper(c) == 'E') {
+      if (auto next = peek(in); next and std::toupper(*next) == 'E') {
          auto exponent = std::string{static_cast<char>(in.get())};
 
          // an exponent may have one '+' or '-' after the 'E'
-         if (c = in.peek(); c == '+' or c == '-') {
+         if (next = peek(in); next and (*next == '+' or *next == '-')) {
             exponent += static_cast<char>(in.get());
          }
 
@@ -70,7 +74,7 @@ namespace ltcpp::detail_lexer {
    token scan_number(std::istream& in, source_coordinate const cursor) noexcept
    {
       auto number = ltcpp::consume_istream_while(in, cjdb::isdigit);
-      if (auto peek = in.peek(); peek == '.' or peek == 'e' or peek == 'E') {
+      if (auto next = peek(in); next and (*next == '.' or *next == 'e' or *next == 'E')) {
          return ::scan_floating(in, std::move(number), cursor);
       }
       else {
@@ -83,7 +87,7 @@ namespace ltcpp::detail_lexer {
    token possibly_float(std::istream& in, source_coordinate const cursor) noexcept
    {
       auto dot = static_cast<char>(in.get());
-      if (in and std::isdigit(in.peek())) {
+      if (auto next = peek(in); next and std::isdigit(*next)) {
          return ::scan_floating(in, std::string{dot}, cursor);
       }
       else {
