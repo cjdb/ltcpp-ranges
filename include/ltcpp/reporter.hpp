@@ -17,6 +17,7 @@
 #define LTCPP_REPORTER_HPP
 
 #include "ltcpp/source_coordinate.hpp"
+#include "ltcpp/source_coordinate_range.hpp"
 #include <ostream>
 #include <memory>
 
@@ -49,22 +50,22 @@ namespace ltcpp {
       template<class... Args>
       // requires (StreamInsertable<Args> and ...)
       void error(pass const tag, source_coordinate const cursor, Args&&... args) noexcept
-      {
-         ++errors_;
-         *out_ << tag << " error at " << cursor << ": ";
-         (*out_ << ... << std::forward<Args>(args));
-         *out_ << '\n';
-      }
+      { report_impl(tag, "error", errors_, cursor, std::forward<Args>(args)...); }
+
+      template<class... Args>
+      // requires (StreamInsertable<Args> and ...)
+      void error(pass const tag, source_coordinate_range const range, Args&&... args) noexcept
+      { report_impl(tag, "error", errors_, range, std::forward<Args>(args)...); }
 
       template<class... Args>
       // requires (StreamInsertable<Args> and ...)
       void warning(pass const tag, source_coordinate const cursor, Args&&... args) noexcept
-      {
-         ++warnings_;
-         *out_ << tag << " warning at " << cursor << ": ";
-         (*out_ << ... << std::forward<Args>(args));
-         *out_ << '\n';
-      }
+      { report_impl(tag, "warning", warnings_, cursor, std::forward<Args>(args)...); }
+
+      template<class... Args>
+      // requires (StreamInsertable<Args> and ...)
+      void warning(pass const tag, source_coordinate_range const range, Args&&... args) noexcept
+      { report_impl(tag, "warning", warnings_, range, std::forward<Args>(args)...); }
 
       std::intmax_t errors() const noexcept
       { return errors_; }
@@ -76,6 +77,26 @@ namespace ltcpp {
       std::intmax_t errors_ = 0;
       std::intmax_t warnings_ = 0;
       bool warnings_as_errors = true;
+
+      template<class... Args>
+      void report_impl(pass const tag, std::string_view const report_type, std::intmax_t& count,
+         source_coordinate const cursor, Args&&... args) noexcept
+      {
+         ++count;
+         *out_ << tag << ' ' << report_type << " at " << cursor << ": ";
+         (*out_ << ... << std::forward<Args>(args));
+         *out_ << '\n';
+      }
+
+      template<class... Args>
+      void report_impl(pass const tag, std::string_view const report_type, std::intmax_t& count,
+         source_coordinate_range const range, Args&&... args) noexcept
+      {
+         ++count;
+         *out_ << tag << ' ' << report_type << " from " << range.begin << " to " << range.end << ": ";
+         (*out_ << ... << std::forward<Args>(args));
+         *out_ << '\n';
+      }
    };
 } // namespace ltcpp
 

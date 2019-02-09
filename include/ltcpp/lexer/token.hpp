@@ -93,10 +93,127 @@ namespace ltcpp {
       exponent_lacking_digit
    };
 
-   struct [[nodiscard]] source_coordinate_range {
-      source_coordinate begin;
-      source_coordinate end;
-   };
+   template<class CharT, class Traits>
+   std::basic_ostream<CharT, Traits>&
+   operator<<(std::basic_ostream<CharT, Traits>& o, token_kind const kind) noexcept
+   {
+      switch (kind) {
+      case token_kind::increment:
+         return o << "++";
+      case token_kind::decrement:
+         return o << "--";
+      case token_kind::plus:
+         return o << "+";
+      case token_kind::minus:
+         return o << "-";
+      case token_kind::times:
+         return o << "*";
+      case token_kind::divide:
+         return o << "/";
+      case token_kind::modulo:
+         return o << "%";
+      case token_kind::assign:
+         return o << "=";
+      case token_kind::plus_eq:
+         return o << "+=";
+      case token_kind::minus_eq:
+         return o << "-=";
+      case token_kind::times_eq:
+         return o << "*=";
+      case token_kind::divide_eq:
+         return o << "/=";
+      case token_kind::modulo_eq:
+         return o << "%=";
+      case token_kind::dot:
+         return o << ".";
+      case token_kind::comma:
+         return o << ",";
+      case token_kind::semicolon:
+         return o << ";";
+      case token_kind::brace_open:
+         return o << "{";
+      case token_kind::brace_close:
+         return o << "}";
+      case token_kind::paren_open:
+         return o << "(";
+      case token_kind::paren_close:
+         return o << ")";
+      case token_kind::square_open:
+         return o << "[";
+      case token_kind::square_close:
+         return o << "]";
+      case token_kind::equal_to:
+         return o << "==";
+      case token_kind::not_equal_to:
+         return o << "!=";
+      case token_kind::less:
+         return o << "<";
+      case token_kind::less_equal:
+         return o << "<=";
+      case token_kind::greater_equal:
+         return o << ">=";
+      case token_kind::greater:
+         return o << ">";
+      case token_kind::and_:
+         return o << "and";
+      case token_kind::or_:
+         return o << "or";
+      case token_kind::not_:
+         return o << "not";
+      case token_kind::integral_literal:
+         return o << "integral literal";
+      case token_kind::boolean_literal:
+         return o << "boolean literal";
+      case token_kind::floating_literal:
+         return o << "floating-point literal";
+      case token_kind::string_literal:
+         return o << "string literal";
+      case token_kind::bool_:
+         return o << "bool";
+      case token_kind::char_:
+         return o << "char";
+      case token_kind::double_:
+         return o << "double";
+      case token_kind::int_:
+         return o << "int";
+      case token_kind::string_:
+         return o << "string";
+      case token_kind::void_:
+         return o << "void";
+      case token_kind::break_:
+         return o << "break";
+      case token_kind::const_:
+         return o << "const";
+      case token_kind::continue_:
+         return o << "continue";
+      case token_kind::for_:
+         return o << "for";
+      case token_kind::if_:
+         return o << "if";
+      case token_kind::return_:
+         return o << "return";
+      case token_kind::while_:
+         return o << "while";
+      case token_kind::identifier:
+         return o << "identifer";
+      case token_kind::eof:
+         return o << "(end-of-file)";
+      case token_kind::unknown_token:
+         return o << "(unknown-token error)";
+      case token_kind::unterminated_string_literal:
+         return o << "(unterminated-string-literal error)";
+      case token_kind::unterminated_comment:
+         return o << "(unterminated-comment error)";
+      case token_kind::invalid_escape_sequence:
+         return o << "(invalid-escape-sequence error)";
+      case token_kind::too_many_radix_points:
+         return o << "(too-many-radix-points error)";
+      case token_kind::exponent_lacking_digit:
+         return o << "(exponent-lacking-digit error)";
+      default:
+         return o << "(unknown-token-kind error)";
+      }
+   }
 
    class [[nodiscard]] token {
    public:
