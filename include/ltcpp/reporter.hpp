@@ -78,22 +78,17 @@ namespace ltcpp {
       std::intmax_t warnings_ = 0;
       bool warnings_as_errors = true;
 
-      template<class... Args>
+      template<class Cursor, class... Args>
       void report_impl(pass const tag, std::string_view const report_type, std::intmax_t& count,
-         source_coordinate const cursor, Args&&... args) noexcept
+         Cursor const cursor, Args&&... args)
       {
-         ++count;
-         *out_ << tag << ' ' << report_type << " at " << cursor << ": ";
-         (*out_ << ... << std::forward<Args>(args));
-         *out_ << '\n';
-      }
 
-      template<class... Args>
-      void report_impl(pass const tag, std::string_view const report_type, std::intmax_t& count,
-         source_coordinate_range const range, Args&&... args) noexcept
-      {
          ++count;
-         *out_ << tag << ' ' << report_type << " from " << range.begin << " to " << range.end << ": ";
+         *out_ << tag << ' ' << report_type;
+         if constexpr (std::is_same_v<Cursor, source_coordinate>) {
+            *out_ << " at ";
+         }
+         *out_ << cursor << ": ";
          (*out_ << ... << std::forward<Args>(args));
          *out_ << '\n';
       }

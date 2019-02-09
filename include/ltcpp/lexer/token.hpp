@@ -235,14 +235,14 @@ namespace ltcpp {
 
       friend bool operator==(token const& a, token const& b) noexcept
       {
-         return std::tie(a.kind_, a.spelling_, a.position_.begin, a.position_.end)
-             == std::tie(b.kind_, b.spelling_, b.position_.begin, b.position_.end);
+         return std::tie(a.kind_, a.spelling_, a.cursor_range_)
+             == std::tie(b.kind_, b.spelling_, b.cursor_range_);
       }
 
       friend std::ostream& operator<<(std::ostream& o, token const& t) noexcept
       {
          return o << '[' << static_cast<int>(t.kind()) << ", \"" << t.spelling() << "\", " <<
-            t.position().begin << ".." << t.position().end << ']';
+            t.cursor_range().begin() << ".." << t.cursor_range().end() << ']';
       }
    private:
       token_kind kind_;

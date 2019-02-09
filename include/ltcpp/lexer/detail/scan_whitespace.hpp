@@ -18,11 +18,30 @@
 
 #include "ltcpp/lexer/token.hpp"
 #include "ltcpp/source_coordinate.hpp"
+#include "ltcpp/source_coordinate_range.hpp"
 #include <istream>
 #include <utility>
 
 namespace ltcpp::detail_lexer {
-   std::pair<source_coordinate, bool>
+   class [[nodiscard]] unterminated_comment_error : public source_coordinate_range {
+   public:
+      using source_coordinate_range::source_coordinate_range;
+      using source_coordinate_range::begin;
+      using source_coordinate_range::end;
+
+      friend constexpr bool
+      operator==(unterminated_comment_error const& x, unterminated_comment_error const& y) noexcept
+      {
+         return static_cast<source_coordinate_range const&>(x)
+             == static_cast<source_coordinate_range const&>(y);
+      }
+
+      friend constexpr bool
+      operator!=(unterminated_comment_error const& x, unterminated_comment_error const& y) noexcept
+      { return not (x == y); }
+   };
+
+   tl::expected<source_coordinate, unterminated_comment_error>
    scan_whitespace_like(std::istream& in, source_coordinate cursor) noexcept;
 } // namespace ltcpp::detail_lexer
 

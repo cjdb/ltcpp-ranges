@@ -144,8 +144,8 @@ int main()
          auto result = scan_whitespace_like(in, source_coordinate{});
          assert(in.eof());
          assert(not result);
-         CHECK(result.error().begin == source_coordinate{line_type{2}, column_type{4}});
-         CHECK(result.error().end == source_coordinate{line_type{7}, column_type{1}});
+         CHECK(result.error().begin() == source_coordinate{line_type{2}, column_type{4}});
+         CHECK(result.error().end() == source_coordinate{line_type{7}, column_type{1}});
       }
    }
 

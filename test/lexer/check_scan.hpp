@@ -36,8 +36,8 @@
    auto expected_spelling = std::string_view{expected_spelling_ == "" ? spelling : expected_spelling_}; \
    CHECK(result.spelling() == expected_spelling);                                                  \
                                                                                                    \
-   auto const begin = result.position().begin;                                                     \
-   auto const end = result.position().end;                                                         \
+   auto const begin = result.cursor_range().begin();                                               \
+   auto const end = result.cursor_range().end();                                                   \
    CHECK(begin.line() == end.line());                                                              \
                                                                                                    \
    auto const column_distance =                                                                    \
