@@ -16,10 +16,12 @@
 #ifndef LTCPP_LEXER_LEXER_HPP
 #define LTCPP_LEXER_LEXER_HPP
 
+#include <cassert>
 #include <istream>
 #include "ltcpp/lexer/token.hpp"
 #include "ltcpp/reporter.hpp"
 #include "ltcpp/source_coordinate.hpp"
+#include <optional>
 
 namespace ltcpp {
    /// \brief
@@ -33,48 +35,65 @@ namespace ltcpp {
    generate_token(std::istream& in, reporter& report, source_coordinate cursor) noexcept(false);
 
    class lexer_view {
-      class default_sentinel_t {}; // public-facing, can't use ranges...
-      class [[nodiscard]] lexer_iterator {
+   public:
+      class sentinel {}; // can't use ranges::default_sentinel_t as it poisons benchmarks
+      class [[nodiscard]] iterator {
       public:
          using difference_type = std::intmax_t;
 
-         lexer_iterator() = default;
+         iterator() = default;
 
-         explicit lexer_iterator(std::istream* in, reporter* report) noexcept
+         explicit iterator(std::istream* in, reporter* report) noexcept
             : in_{in}
             , report_{report}
-         {}
+            , cache_{ltcpp::generate_token(*in_, *report_, source_coordinate{})}
+         { assert(cache_); }
 
-         token operator*() noexcept(false)
+         token& operator*() noexcept
          {
-            auto result = ltcpp::generate_token(*in_, *report_, cursor_);
-            cursor_ = result.cursor_range().end;
-            return result;
+            assert(cache_);
+            return *cache_;
          }
 
-         lexer_iterator& operator++() noexcept
-         { return *this; }
+         token* operator->() noexcept
+         {
+            assert(cache_);
+            return std::addressof(*cache_);
+         }
 
-         lexer_iterator& operator++(int) noexcept
-         { return *this; }
+         iterator& operator++() noexcept(false)
+         {
+            if (cache_->kind() != token_kind::eof) {
+               cache_ = ltcpp::generate_token(*in_, *report_, cache_->cursor_range().end());
+               assert(cache_);
+            }
+            else {
+               eof_seen_ = true;
+            }
+            return *this;
+         }
 
-         friend bool operator==(lexer_iterator const& i, default_sentinel_t) noexcept
-         { return not i.in_->good(); }
+         void operator++(int) noexcept(false)
+         { operator++(); }
 
-         friend bool operator==(default_sentinel_t s, lexer_iterator const& i) noexcept
+         friend bool operator==(iterator const& i, sentinel) noexcept
+         { return not i.in_->good() and i.eof_seen_; }
+
+         friend bool operator==(sentinel s, iterator const& i) noexcept
          { return i == s; }
 
-         friend bool operator!=(lexer_iterator const& i, default_sentinel_t s) noexcept
+         friend bool operator!=(iterator const& i, sentinel s) noexcept
          { return not (i == s); }
 
-         friend bool operator!=(default_sentinel_t s, lexer_iterator const& i) noexcept
+         friend bool operator!=(sentinel s, iterator const& i) noexcept
          { return not (s == i); }
       private:
          std::istream* in_;
          reporter* report_;
-         source_coordinate cursor_;
+         std::optional<token> cache_;
+         bool eof_seen_ = false;
       };
-   public:
+
       lexer_view() = default;
 
       explicit lexer_view(std::istream& in, reporter& report) noexcept
@@ -82,10 +101,10 @@ namespace ltcpp {
          , report_{std::addressof(report)}
       { in.unsetf(std::ios_base::skipws); }
 
-      lexer_iterator begin() noexcept
-      { return lexer_iterator{in_, report_}; }
+      iterator begin() noexcept
+      { return iterator{in_, report_}; }
 
-      default_sentinel_t end() noexcept
+      sentinel end() const noexcept
       { return {}; }
    private:
       std::istream* in_ = nullptr;

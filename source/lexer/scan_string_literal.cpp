@@ -23,6 +23,7 @@
 #include <range/v3/action/adjacent_remove_if.hpp>
 #include <range/v3/algorithm/count.hpp>
 #include <range/v3/algorithm/equal.hpp>
+#include <range/v3/view/join_when.hpp>
 #include <range/v3/algorithm/for_each.hpp>
 #include <range/v3/view/drop.hpp>
 #include <range/v3/view/drop_while.hpp>
@@ -71,7 +72,8 @@ namespace {
          // the first two characters need to be checked separately to the rest of the literal,
          // because we get a false positive otherwise ("\\" has two backslashes, which immediately
          // disqualifies it, if we were to bundle the first two characters together).
-         if (distance(x) >= 2 and x[0] == '\\' and legal_escapes.find(x[1]) == std::string_view::npos) {
+         auto first = begin(x);
+         if (distance(x) >= 2 and *first == '\\' and legal_escapes.find(*next(first)) == std::string_view::npos) {
             return false;
          }
          else {
@@ -80,11 +82,11 @@ namespace {
       };
 
       auto invalid_escapes = lexeme
-                           | view::split_when(is_escape)
-                           | view::drop_while(no_illegal_escapes);
-
+                   | view::split_when(is_escape)
+                   | view::join_when([](auto&& s){ return distance(s) == 1; })
+                   | view::drop_while(no_illegal_escapes);
       return empty(invalid_escapes) ? ltcpp::token_kind::string_literal
-                                    : ltcpp::token_kind::invalid_escape_sequence;
+                    : ltcpp::token_kind::invalid_escape_sequence;
    }
 
    /// \brief Checks that the string literal is terminated by a close-quote and that all escape

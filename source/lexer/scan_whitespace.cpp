@@ -206,8 +206,8 @@ namespace ltcpp::detail_lexer {
          in.unget(); // take_while consumes an extra character
       }
       else if (unterminated_comment) {
-         unterminated_comment->begin = cursor;
-         unterminated_comment->end = source_coordinate::shift(cursor, unterminated_comment->end);
+         unterminated_comment->begin(cursor);
+         unterminated_comment->end(source_coordinate::shift(cursor, unterminated_comment->end()));
          return tl::unexpected{*unterminated_comment};
       }
 

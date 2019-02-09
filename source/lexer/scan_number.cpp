@@ -81,17 +81,4 @@ namespace ltcpp::detail_lexer {
          return ::ltcpp::make_token(std::move(number), cursor);
       }
    }
-
-   /// \brief Checks if a '.' forms a floating-point number or is indeed a dot.
-   ///
-   token possibly_float(std::istream& in, source_coordinate const cursor) noexcept
-   {
-      auto dot = static_cast<char>(in.get());
-      if (auto next = peek(in); next and std::isdigit(*next)) {
-         return ::scan_floating(in, std::string{dot}, cursor);
-      }
-      else {
-         return ::ltcpp::make_token(std::string{dot}, cursor);
-      }
-   }
 } // namespace ltcpp::detail_lexer

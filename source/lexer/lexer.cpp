@@ -45,7 +45,7 @@ namespace {
        : t.kind() == token_kind::unknown_token               ? "unknown token: \""sv
                                                              : ""sv;
       if (not empty(message)) {
-         report.error(pass::lexical, t.cursor_range().begin, message, t.spelling(), "\".");
+         report.error(pass::lexical, t.cursor_range().begin(), message, t.spelling(), "\".");
       }
       else {
          return;
@@ -70,9 +70,6 @@ namespace {
       else if (cjdb::isdigit(next)) {
          return guarded_scan(lexer::scan_number, in, cursor, report);
       }
-      else if (next == '.') {
-         return guarded_scan(lexer::possibly_float, in, cursor, report);
-      }
       else if (next == '"') {
          return guarded_scan(lexer::scan_string_literal, in, cursor, report);
       }
@@ -94,8 +91,8 @@ namespace {
       }
       else {
          auto const error = cursor_result.error();
-         report.error(pass::lexical, error.begin, "unterminated multi-line comment.");
-         eof_cursor = error.end;
+         report.error(pass::lexical, error.begin(), "unterminated multi-line comment.");
+         eof_cursor = error.end();
       }
 
       constexpr auto eof_spelling = "$";

@@ -58,9 +58,6 @@ namespace {
 
       using ltcpp::token_kind;
       static auto lexeme_table = std::unordered_map<std::string_view, token_kind>{
-         // symbols
-         {"++", token_kind::increment},
-         {"--", token_kind::decrement},
          // arithmetic
          {"+", token_kind::plus},
          {"-", token_kind::minus},
@@ -68,15 +65,11 @@ namespace {
          {"/", token_kind::divide},
          {"%", token_kind::modulo},
          // assignment
-         {"=",  token_kind::assign},
-         {"+=", token_kind::plus_eq},
-         {"-=", token_kind::minus_eq},
-         {"*=", token_kind::times_eq},
-         {"/=", token_kind::divide_eq},
-         {"%=", token_kind::modulo_eq},
+         {"<-", token_kind::assign},
          // separators
          {".", token_kind::dot},
          {",", token_kind::comma},
+         {":", token_kind::colon},
          {";", token_kind::semicolon},
          {"{", token_kind::brace_open},
          {"}", token_kind::brace_close},
@@ -84,8 +77,9 @@ namespace {
          {")", token_kind::paren_close},
          {"[", token_kind::square_open},
          {"]", token_kind::square_close},
+         {"->", token_kind::arrow},
          // comparison operations
-         {"==", token_kind::equal_to},
+         {"=", token_kind::equal_to},
          {"!=", token_kind::not_equal_to},
          {"<",  token_kind::less},
          {"<=", token_kind::less_equal},
@@ -99,20 +93,32 @@ namespace {
          {"false", token_kind::boolean_literal},
          {"true",  token_kind::boolean_literal},
          // types
-         {"bool",   token_kind::bool_},
-         {"char",   token_kind::char_},
-         {"double", token_kind::double_},
-         {"int",    token_kind::int_},
-         {"string", token_kind::string_},
-         {"void",   token_kind::void_},
+         {"bool",    token_kind::bool_},
+         {"char8",   token_kind::char8},
+         {"float16", token_kind::float16},
+         {"float32", token_kind::float32},
+         {"float64", token_kind::float64},
+         {"int8",    token_kind::int8},
+         {"int16",   token_kind::int16},
+         {"int32",   token_kind::int32},
+         {"int64",   token_kind::int64},
+         {"void",    token_kind::void_},
          // keywords
+         {"assert",   token_kind::assert_},
          {"break",    token_kind::break_},
-         {"const",    token_kind::const_},
          {"continue", token_kind::continue_},
          {"for",      token_kind::for_},
+         {"fun",      token_kind::fun_},
          {"if",       token_kind::if_},
+         {"import",   token_kind::import_},
+         {"let",      token_kind::let_},
+         {"module",   token_kind::module_},
+         {"mutable",  token_kind::mutable_},
+         {"readable", token_kind::readable_},
+         {"ref",      token_kind::ref_},
          {"return",   token_kind::return_},
          {"while",    token_kind::while_},
+         {"writable", token_kind::writable_},
          // errors
          {"!", token_kind::unknown_token}
       };

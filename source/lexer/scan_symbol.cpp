@@ -46,14 +46,10 @@ namespace ltcpp::detail_lexer {
       auto current = '\0';
       in.get(current);
       switch (current) {
-      case '+': [[fallthrough]];
       case '-':
-         return ::possibly_token(in, current, cursor, {'=', current});
-      case '*': [[fallthrough]];
-      case '/': [[fallthrough]];
-      case '%': [[fallthrough]];
-      case '<': [[fallthrough]];
-      case '=': [[fallthrough]];
+         return ::possibly_token(in, current, cursor, {">"});
+      case '<':
+         return ::possibly_token(in, current, cursor, {'=', '-'});
       case '>': [[fallthrough]];
       case '!':
          return ::possibly_token(in, current, cursor, {'='});
