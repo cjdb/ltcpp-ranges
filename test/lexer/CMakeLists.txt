@@ -13,36 +13,5 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-build_test("${prefix}" source_coordinate)
-build_test(
-   "${prefix}"
-   scan_identifier
-   # PRIVATE_LIBRARIES
-      source.lexer.scan_identifier
-      source.lexer.token)
-build_test(
-   "${prefix}"
-   scan_number
-   # PRIVATE_LIBRARIES
-      source.lexer.scan_number
-      source.lexer.token)
-build_test(
-   "${prefix}"
-   scan_symbol
-   # PRIVATE_LIBRARIES
-      source.lexer.scan_symbol
-      source.lexer.token)
-build_test(
-   "${prefix}"
-   scan_string_literal
-   # PRIVATE_LIBRARIES
-      source.lexer.scan_string_literal
-      source.lexer.token)
-build_test(
-   "${prefix}"
-   scan_whitespace
-   # PRIVATE_LIBRARIES
-      source.lexer.scan_whitespace
-      source.lexer.token)
-
-add_subdirectory(lexer)
+add_subdirectory(unit)
+add_subdirectory(integration)

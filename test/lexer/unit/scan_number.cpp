@@ -17,7 +17,7 @@
 #include "ltcpp/lexer/token.hpp"
 
 #include "./check_scan.hpp"
-#include "../simple_test.hpp"
+#include "../../simple_test.hpp"
 #include <string>
 #include <string_view>
 
@@ -57,12 +57,6 @@ int main()
       CHECK_SCAN(scan_number, "1.2.3", token_kind::too_many_radix_points, ""sv);
       CHECK_SCAN(scan_number, "1.e", token_kind::exponent_lacking_digit, ""sv);
       CHECK_SCAN(scan_number, "756E", token_kind::exponent_lacking_digit, ""sv);
-   }
-
-   { // Check . is a dot and .12 is a floating literal
-      using ltcpp::detail_lexer::possibly_float;
-      CHECK_SCAN(possibly_float, ".", token_kind::dot, ""sv);
-      CHECK_SCAN(possibly_float, ".1", token_kind::floating_literal, ""sv);
    }
 
    return ::test_result();

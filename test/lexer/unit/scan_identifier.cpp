@@ -17,7 +17,7 @@
 #include "ltcpp/lexer/detail/scan_identifier.hpp"
 
 #include "./check_scan.hpp"
-#include "../simple_test.hpp"
+#include "../../simple_test.hpp"
 #include <string>
 #include <string_view>
 
@@ -43,23 +43,36 @@ int main()
    }
    { // Check type specifiers
       CHECK_SCAN(scan_identifier, "bool", token_kind::bool_, ""sv);
-      CHECK_SCAN(scan_identifier, "char", token_kind::char_, ""sv);
-      CHECK_SCAN(scan_identifier, "double", token_kind::double_, ""sv);
-      CHECK_SCAN(scan_identifier, "int", token_kind::int_, ""sv);
-      CHECK_SCAN(scan_identifier, "string", token_kind::string_, ""sv);
+      CHECK_SCAN(scan_identifier, "char8", token_kind::char8, ""sv);
+      CHECK_SCAN(scan_identifier, "float16", token_kind::float16, ""sv);
+      CHECK_SCAN(scan_identifier, "float32", token_kind::float32, ""sv);
+      CHECK_SCAN(scan_identifier, "float64", token_kind::float64, ""sv);
+      CHECK_SCAN(scan_identifier, "int8", token_kind::int8, ""sv);
+      CHECK_SCAN(scan_identifier, "int16", token_kind::int16, ""sv);
+      CHECK_SCAN(scan_identifier, "int32", token_kind::int32, ""sv);
+      CHECK_SCAN(scan_identifier, "int64", token_kind::int64, ""sv);
+      CHECK_SCAN(scan_identifier, "void", token_kind::void_, ""sv);
    }
    { // Check boolean literals
       CHECK_SCAN(scan_identifier, "true", token_kind::boolean_literal, ""sv);
       CHECK_SCAN(scan_identifier, "false", token_kind::boolean_literal, ""sv);
    }
    { // Check keywords
+      CHECK_SCAN(scan_identifier, "assert", token_kind::assert_, ""sv);
       CHECK_SCAN(scan_identifier, "break", token_kind::break_, ""sv);
-      CHECK_SCAN(scan_identifier, "const", token_kind::const_, ""sv);
       CHECK_SCAN(scan_identifier, "continue", token_kind::continue_, ""sv);
       CHECK_SCAN(scan_identifier, "for", token_kind::for_, ""sv);
+      CHECK_SCAN(scan_identifier, "fun", token_kind::fun_, ""sv);
       CHECK_SCAN(scan_identifier, "if", token_kind::if_, ""sv);
+      CHECK_SCAN(scan_identifier, "import", token_kind::import_, ""sv);
+      CHECK_SCAN(scan_identifier, "let", token_kind::let_, ""sv);
+      CHECK_SCAN(scan_identifier, "module", token_kind::module_, ""sv);
+      CHECK_SCAN(scan_identifier, "mutable", token_kind::mutable_, ""sv);
+      CHECK_SCAN(scan_identifier, "readable", token_kind::readable_, ""sv);
+      CHECK_SCAN(scan_identifier, "ref", token_kind::ref_, ""sv);
       CHECK_SCAN(scan_identifier, "return", token_kind::return_, ""sv);
       CHECK_SCAN(scan_identifier, "while", token_kind::while_, ""sv);
+      CHECK_SCAN(scan_identifier, "writable", token_kind::writable_, ""sv);
    }
    { // Check strings with symbols that aren't part of the set of identifiers
       CHECK_SCAN(scan_identifier, "cursor 1", token_kind::identifier, "cursor"sv);

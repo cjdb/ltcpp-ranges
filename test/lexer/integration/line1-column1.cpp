@@ -24,7 +24,7 @@
 
 int main()
 {
-   // Check a program starting on Line 2, Column 1
+   // Check a program starting on Line 1, Column 1
    using ltcpp::token, ltcpp::token_kind, ltcpp::source_coordinate;
    using column_type = source_coordinate::column_type;
    using line_type = source_coordinate::line_type;
@@ -33,96 +33,103 @@ int main()
    auto report = ltcpp::reporter{errors};
 
    auto const source = std::string{
-      "// conforming program starting on line 2\n"
-      "int main()\n"
+      "fun main() -> int32\n"
       "{\n"
       "   print(\"Hello, world!\\n\");\n"
       "}\n"
    };
-   auto in = std::istringstream{source};
-   in.unsetf(std::ios_base::skipws);
 
    auto tokens = generate_tokens(source, report);
-
-   assert(size(tokens) == 12);
+   assert(size(tokens) == 14);
 
    auto const expected_tokens = std::vector{
       token{
-         token_kind::int_,
-         "int",
-         source_coordinate{line_type{2}, column_type{1}},
-         source_coordinate{line_type{2}, column_type{4}}
+         token_kind::fun_,
+         "fun",
+         source_coordinate{line_type{1}, column_type{1}},
+         source_coordinate{line_type{1}, column_type{4}}
       },
       token{
          token_kind::identifier,
          "main",
-         source_coordinate{line_type{2}, column_type{5}},
-         source_coordinate{line_type{2}, column_type{9}}
+         source_coordinate{line_type{1}, column_type{5}},
+         source_coordinate{line_type{1}, column_type{9}}
       },
       token{
          token_kind::paren_open,
          "(",
-         source_coordinate{line_type{2}, column_type{9}},
-         source_coordinate{line_type{2}, column_type{10}}
+         source_coordinate{line_type{1}, column_type{9}},
+         source_coordinate{line_type{1}, column_type{10}}
       },
       token{
          token_kind::paren_close,
          ")",
-         source_coordinate{line_type{2}, column_type{10}},
-         source_coordinate{line_type{2}, column_type{11}}
+         source_coordinate{line_type{1}, column_type{10}},
+         source_coordinate{line_type{1}, column_type{11}}
+      },
+      token{
+         token_kind::arrow,
+         "->",
+         source_coordinate{line_type{1}, column_type{12}},
+         source_coordinate{line_type{1}, column_type{14}}
+      },
+      token{
+         token_kind::int32,
+         "int32",
+         source_coordinate{line_type{1}, column_type{15}},
+         source_coordinate{line_type{1}, column_type{20}}
       },
       token{
          token_kind::brace_open,
          "{",
-         source_coordinate{line_type{3}, column_type{1}},
-         source_coordinate{line_type{3}, column_type{2}}
+         source_coordinate{line_type{2}, column_type{1}},
+         source_coordinate{line_type{2}, column_type{2}}
       },
       token{
          token_kind::identifier,
          "print",
-         source_coordinate{line_type{4}, column_type{4}},
-         source_coordinate{line_type{4}, column_type{9}}
+         source_coordinate{line_type{3}, column_type{4}},
+         source_coordinate{line_type{3}, column_type{9}}
       },
       token{
          token_kind::paren_open,
          "(",
-         source_coordinate{line_type{4}, column_type{9}},
-         source_coordinate{line_type{4}, column_type{10}}
+         source_coordinate{line_type{3}, column_type{9}},
+         source_coordinate{line_type{3}, column_type{10}}
       },
       token{
          token_kind::string_literal,
          "\"Hello, world!\n\"",
-         source_coordinate{line_type{4}, column_type{10}},
-         source_coordinate{line_type{4}, column_type{26}}
+         source_coordinate{line_type{3}, column_type{10}},
+         source_coordinate{line_type{3}, column_type{26}}
       },
       token{
          token_kind::paren_close,
          ")",
-         source_coordinate{line_type{4}, column_type{26}},
-         source_coordinate{line_type{4}, column_type{27}}
+         source_coordinate{line_type{3}, column_type{26}},
+         source_coordinate{line_type{3}, column_type{27}}
       },
       token{
          token_kind::semicolon,
          ";",
-         source_coordinate{line_type{4}, column_type{27}},
-         source_coordinate{line_type{4}, column_type{28}}
+         source_coordinate{line_type{3}, column_type{27}},
+         source_coordinate{line_type{3}, column_type{28}}
       },
       token{
          token_kind::brace_close,
          "}",
-         source_coordinate{line_type{5}, column_type{1}},
-         source_coordinate{line_type{5}, column_type{2}}
+         source_coordinate{line_type{4}, column_type{1}},
+         source_coordinate{line_type{4}, column_type{2}}
       },
       token{
          token_kind::eof,
          "$",
-         source_coordinate{line_type{6}, column_type{1}},
-         source_coordinate{line_type{6}, column_type{1}}
+         source_coordinate{line_type{5}, column_type{1}},
+         source_coordinate{line_type{5}, column_type{1}}
       }
    };
 
    CHECK_EQUAL(tokens, expected_tokens);
-
    CHECK(report.errors() == 0);
    CHECK(report.warnings() == 0);
    CHECK(empty(errors.str()));

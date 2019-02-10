@@ -22,7 +22,6 @@
 
 namespace ltcpp::detail_lexer {
    token scan_number(std::istream& in, source_coordinate cursor) noexcept;
-   token possibly_float(std::istream& in, source_coordinate cursor) noexcept;
 } // namespace ltcpp::detail_lexer
 
 #endif // LTCPP_LEXER_DETAIL_SCAN_NUMBER_HPP

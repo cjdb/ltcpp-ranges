@@ -36,18 +36,18 @@ auto distance(R&& r)
    return static_cast<std::intmax_t>(std::size(r));
 }
 
-#define CHECK_SCAN_WHITESPACE(spaces, column_delta, line_delta) {                                  \
+#define CHECK_SCAN_WHITESPACE(spaces, line_delta, column_delta) {                                  \
    auto s = std::string(spaces);                                                                   \
    auto const delta_coordinate = source_coordinate{                                                \
-      source_coordinate::column_type{column_delta},                                                \
-      source_coordinate::line_type{line_delta}                                                     \
+      source_coordinate::line_type{line_delta},                                                    \
+      source_coordinate::column_type{column_delta}                                                 \
    };                                                                                              \
    constexpr auto default_whitespace = source_coordinate{};                                        \
    CHECK_SCAN_WHITESPACE_IMPL(s, default_whitespace,                                               \
       source_coordinate::shift(default_whitespace, delta_coordinate));                             \
    constexpr auto non_default_whitespace = source_coordinate{                                      \
-      source_coordinate::column_type{42},                                                          \
-      source_coordinate::line_type{38}                                                             \
+      source_coordinate::line_type{38},                                                            \
+      source_coordinate::column_type{42}                                                           \
    };                                                                                              \
    CHECK_SCAN_WHITESPACE_IMPL(s, non_default_whitespace,                                           \
       source_coordinate::shift(non_default_whitespace, delta_coordinate));                         \
@@ -80,12 +80,12 @@ int main()
       CHECK_SCAN_WHITESPACE("\n\n", line_type{2}, column_type{0});
       CHECK_SCAN_WHITESPACE("\n\ncare bear cou\n\tdown", line_type{2}, column_type{0});
 
-      CHECK_SCAN_WHITESPACE("\r\nelectrode diglett \nido\ran mankey", column_type{0}, line_type{1});
-      CHECK_SCAN_WHITESPACE("\r\n\r\n", column_type{0}, line_type{2});
-      CHECK_SCAN_WHITESPACE("\r\n\n", column_type{0}, line_type{2});
-      CHECK_SCAN_WHITESPACE("\n\r\n", column_type{0}, line_type{2});
-      CHECK_SCAN_WHITESPACE("\n\r", column_type{0}, line_type{1});
-      CHECK_SCAN_WHITESPACE("\n\r\n\rthe\re's a s\nake in my boo\t!", column_type{0}, line_type{2});
+      CHECK_SCAN_WHITESPACE("\r\nelectrode diglett \nido\ran mankey", line_type{1}, column_type{0});
+      CHECK_SCAN_WHITESPACE("\r\n\r\n", line_type{2}, column_type{0});
+      CHECK_SCAN_WHITESPACE("\r\n\n", line_type{2}, column_type{0});
+      CHECK_SCAN_WHITESPACE("\n\r\n", line_type{2}, column_type{0});
+      CHECK_SCAN_WHITESPACE("\n\r", line_type{1}, column_type{0});
+      CHECK_SCAN_WHITESPACE("\n\r\n\rthe\re's a s\nake in my boo\t!", line_type{2}, column_type{0});
    }
    { // Scan carriage returns
       CHECK_SCAN_WHITESPACE("\r", line_type{0}, column_type{1});
@@ -106,31 +106,31 @@ int main()
       CHECK_SCAN_WHITESPACE("//", line_type{0}, column_type{2});
 
       constexpr auto hello_world = "// hello world!"sv;
-      CHECK_SCAN_WHITESPACE(hello_world, column_type{distance(hello_world)}, line_type{0});
+      CHECK_SCAN_WHITESPACE(hello_world, line_type{0}, column_type{distance(hello_world)});
 
       constexpr auto hello_world_lf = "// hello world\n"sv;
-      CHECK_SCAN_WHITESPACE(hello_world_lf, column_type{0}, line_type{1});
+      CHECK_SCAN_WHITESPACE(hello_world_lf, line_type{1}, column_type{0});
 
       constexpr auto hello_lf_world_crlf = "// hello\n"
                                            "//\tworld\r\n"sv;
-      CHECK_SCAN_WHITESPACE(hello_lf_world_crlf, column_type{0}, line_type{2});
+      CHECK_SCAN_WHITESPACE(hello_lf_world_crlf, line_type{2}, column_type{0});
    }
    { // Scan multi-line comment
       { // Well-formed comments
          constexpr auto empty = "/**/"sv;
-         CHECK_SCAN_WHITESPACE(empty, column_type{distance(empty)}, line_type{0});
-         CHECK_SCAN_WHITESPACE("/**/alakazam", column_type{distance(empty)}, line_type{0});
+         CHECK_SCAN_WHITESPACE(empty, line_type{0}, column_type{distance(empty)});
+         CHECK_SCAN_WHITESPACE("/**/alakazam", line_type{0}, column_type{distance(empty)});
 
          constexpr auto single_line = "/* alakazam */"sv;
-         CHECK_SCAN_WHITESPACE(single_line, column_type{distance(single_line)}, line_type{0});
+         CHECK_SCAN_WHITESPACE(single_line, line_type{0}, column_type{distance(single_line)});
 
          constexpr auto multi_line = "/**\n"
                                     " * \\brief This is a multi-line comment\r\n"
                                     " */"sv;
-         CHECK_SCAN_WHITESPACE(multi_line, column_type{3}, line_type{2});
+         CHECK_SCAN_WHITESPACE(multi_line, line_type{2}, column_type{3});
 
          constexpr auto fake_end = "/*/ hahaha */"sv;
-         CHECK_SCAN_WHITESPACE(fake_end, column_type{distance(fake_end)}, line_type{0});
+         CHECK_SCAN_WHITESPACE(fake_end, line_type{0}, column_type{distance(fake_end)});
       }
       { // Unterminated comment
          auto comment = "\n"

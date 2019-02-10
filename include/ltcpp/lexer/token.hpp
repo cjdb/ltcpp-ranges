@@ -24,9 +24,6 @@
 
 namespace ltcpp {
    enum class token_kind {
-      // symbols
-      increment,
-      decrement,
       // arithmetic
       plus,
       minus,
@@ -35,14 +32,10 @@ namespace ltcpp {
       modulo,
       // assignment
       assign,
-      plus_eq,
-      minus_eq,
-      times_eq,
-      divide_eq,
-      modulo_eq,
       // separators
       dot,
       comma,
+      colon,
       semicolon,
       brace_open,
       brace_close,
@@ -50,6 +43,7 @@ namespace ltcpp {
       paren_close,
       square_open,
       square_close,
+      arrow,
       // comparison operations
       equal_to,
       not_equal_to,
@@ -68,19 +62,31 @@ namespace ltcpp {
       string_literal,
       // type specifiers
       bool_,
-      char_,
-      double_,
-      int_,
-      string_,
+      char8,
+      float16,
+      float32,
+      float64,
+      int8,
+      int16,
+      int32,
+      int64,
       void_,
       // keywords
+      assert_,
       break_,
-      const_,
       continue_,
       for_,
+      fun_,
       if_,
+      import_,
+      let_,
+      module_,
+      mutable_,
+      readable_,
+      ref_,
       return_,
       while_,
+      writable_,
       // other
       identifier,
       eof,
@@ -98,10 +104,6 @@ namespace ltcpp {
    operator<<(std::basic_ostream<CharT, Traits>& o, token_kind const kind) noexcept
    {
       switch (kind) {
-      case token_kind::increment:
-         return o << "++";
-      case token_kind::decrement:
-         return o << "--";
       case token_kind::plus:
          return o << "+";
       case token_kind::minus:
@@ -113,21 +115,13 @@ namespace ltcpp {
       case token_kind::modulo:
          return o << "%";
       case token_kind::assign:
-         return o << "=";
-      case token_kind::plus_eq:
-         return o << "+=";
-      case token_kind::minus_eq:
-         return o << "-=";
-      case token_kind::times_eq:
-         return o << "*=";
-      case token_kind::divide_eq:
-         return o << "/=";
-      case token_kind::modulo_eq:
-         return o << "%=";
+         return o << "<-";
       case token_kind::dot:
          return o << ".";
       case token_kind::comma:
          return o << ",";
+      case token_kind::colon:
+         return o << ":";
       case token_kind::semicolon:
          return o << ";";
       case token_kind::brace_open:
@@ -142,8 +136,10 @@ namespace ltcpp {
          return o << "[";
       case token_kind::square_close:
          return o << "]";
+      case token_kind::arrow:
+         return o << "->";
       case token_kind::equal_to:
-         return o << "==";
+         return o << "=";
       case token_kind::not_equal_to:
          return o << "!=";
       case token_kind::less:
@@ -170,30 +166,54 @@ namespace ltcpp {
          return o << "string literal";
       case token_kind::bool_:
          return o << "bool";
-      case token_kind::char_:
-         return o << "char";
-      case token_kind::double_:
-         return o << "double";
-      case token_kind::int_:
-         return o << "int";
-      case token_kind::string_:
-         return o << "string";
+      case token_kind::char8:
+         return o << "char8";
+      case token_kind::float16:
+         return o << "float16";
+      case token_kind::float32:
+         return o << "float32";
+      case token_kind::float64:
+         return o << "float64";
+      case token_kind::int8:
+         return o << "int8";
+      case token_kind::int16:
+         return o << "int16";
+      case token_kind::int32:
+         return o << "int32";
+      case token_kind::int64:
+         return o << "int64";
       case token_kind::void_:
          return o << "void";
+      case token_kind::assert_:
+         return o << "assert";
       case token_kind::break_:
          return o << "break";
-      case token_kind::const_:
-         return o << "const";
       case token_kind::continue_:
          return o << "continue";
       case token_kind::for_:
          return o << "for";
+      case token_kind::fun_:
+         return o << "fun";
       case token_kind::if_:
          return o << "if";
+      case token_kind::import_:
+         return o << "import";
+      case token_kind::let_:
+         return o << "let";
+      case token_kind::module_:
+         return o << "module";
+      case token_kind::mutable_:
+         return o << "mutable";
+      case token_kind::readable_:
+         return o << "readable";
+      case token_kind::ref_:
+         return o << "ref";
       case token_kind::return_:
          return o << "return";
       case token_kind::while_:
          return o << "while";
+      case token_kind::writable_:
+         return o << "writable";
       case token_kind::identifier:
          return o << "identifer";
       case token_kind::eof:

@@ -33,7 +33,7 @@ int main()
    auto report = ltcpp::reporter{errors};
 
    auto const source = std::string{
-      "\tvoid\rmain($)\n"
+      "\tfun\rmain($) -> void\n"
       "}\n"
       "\treturn\"This string is terminated.\"\n"
       "\f"
@@ -43,34 +43,46 @@ int main()
    auto const tokens = generate_tokens(source, report);
    auto const expected_tokens = std::vector{
       token{
-         token_kind::void_,
-         "void",
+         token_kind::fun_,
+         "fun",
          source_coordinate{line_type{1}, column_type{2}},
-         source_coordinate{line_type{1}, column_type{6}}
+         source_coordinate{line_type{1}, column_type{5}}
       },
       token{
          token_kind::identifier,
          "main",
-         source_coordinate{line_type{1}, column_type{7}},
-         source_coordinate{line_type{1}, column_type{11}}
+         source_coordinate{line_type{1}, column_type{6}},
+         source_coordinate{line_type{1}, column_type{10}}
       },
       token{
          token_kind::paren_open,
          "(",
-         source_coordinate{line_type{1}, column_type{11}},
-         source_coordinate{line_type{1}, column_type{12}}
+         source_coordinate{line_type{1}, column_type{10}},
+         source_coordinate{line_type{1}, column_type{11}}
       },
       token{
          token_kind::unknown_token,
          "$",
-         source_coordinate{line_type{1}, column_type{12}},
-         source_coordinate{line_type{1}, column_type{13}}
+         source_coordinate{line_type{1}, column_type{11}},
+         source_coordinate{line_type{1}, column_type{12}}
       },
       token{
          token_kind::paren_close,
          ")",
-         source_coordinate{line_type{1}, column_type{13}},
-         source_coordinate{line_type{1}, column_type{14}}
+         source_coordinate{line_type{1}, column_type{12}},
+         source_coordinate{line_type{1}, column_type{13}}
+      },
+      token{
+         token_kind::arrow,
+         "->",
+         source_coordinate{line_type{1}, column_type{14}},
+         source_coordinate{line_type{1}, column_type{16}}
+      },
+      token{
+         token_kind::void_,
+         "void",
+         source_coordinate{line_type{1}, column_type{17}},
+         source_coordinate{line_type{1}, column_type{21}}
       },
       token{
          token_kind::brace_close,
@@ -125,7 +137,7 @@ int main()
    CHECK(report.errors() == 3);
    CHECK(report.warnings() == 0);
    CHECK(errors.str() ==
-      "lexical error at {1:12}: unknown token: \"$\".\n"
+      "lexical error at {1:11}: unknown token: \"$\".\n"
       "lexical error at {5:7}: unterminated string literal: \"\"This string is not terminated.\".\n"
       "lexical error at {6:11}: unterminated string literal: \"\"This string is also not terminated\\\"\".\n");
 

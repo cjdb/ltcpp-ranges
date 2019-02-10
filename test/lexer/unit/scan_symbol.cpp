@@ -25,13 +25,7 @@ int main()
    using namespace std::string_literals;
    using namespace std::string_view_literals;
 
-   auto scan_symbol = [](auto& in, auto&& y) noexcept {
-      auto current = static_cast<char>(in.get());
-      return ltcpp::detail_lexer::scan_symbol(in, current, y);
-   };
-
-   CHECK_SCAN(scan_symbol, "++", token_kind::increment, ""sv);
-   CHECK_SCAN(scan_symbol, "--", token_kind::decrement, ""sv);
+   using ltcpp::detail_lexer::scan_symbol;
 
    { // arithmetic
       CHECK_SCAN(scan_symbol, "+", token_kind::plus, ""sv);
@@ -42,16 +36,11 @@ int main()
    }
 
    { // assignment
-      CHECK_SCAN(scan_symbol, "=", token_kind::assign, ""sv);
-      CHECK_SCAN(scan_symbol, "+=", token_kind::plus_eq, ""sv);
-      CHECK_SCAN(scan_symbol, "-=", token_kind::minus_eq, ""sv);
-      CHECK_SCAN(scan_symbol, "*=", token_kind::times_eq, ""sv);
-      CHECK_SCAN(scan_symbol, "/=", token_kind::divide_eq, ""sv);
-      CHECK_SCAN(scan_symbol, "%=", token_kind::modulo_eq, ""sv);
+      CHECK_SCAN(scan_symbol, "<-", token_kind::assign, ""sv);
    }
 
    { // comparison
-      CHECK_SCAN(scan_symbol, "==", token_kind::equal_to, ""sv);
+      CHECK_SCAN(scan_symbol, "=", token_kind::equal_to, ""sv);
       CHECK_SCAN(scan_symbol, "!=", token_kind::not_equal_to, ""sv);
       CHECK_SCAN(scan_symbol, "<", token_kind::less, ""sv);
       CHECK_SCAN(scan_symbol, "<=", token_kind::less_equal, ""sv);
@@ -62,6 +51,7 @@ int main()
    { // separators
       CHECK_SCAN(scan_symbol, ".", token_kind::dot, ""sv);
       CHECK_SCAN(scan_symbol, ",", token_kind::comma, ""sv);
+      CHECK_SCAN(scan_symbol, ":", token_kind::colon, ""sv);
       CHECK_SCAN(scan_symbol, ";", token_kind::semicolon, ""sv);
       CHECK_SCAN(scan_symbol, "{", token_kind::brace_open, ""sv);
       CHECK_SCAN(scan_symbol, "}", token_kind::brace_close, ""sv);
@@ -69,11 +59,14 @@ int main()
       CHECK_SCAN(scan_symbol, ")", token_kind::paren_close, ""sv);
       CHECK_SCAN(scan_symbol, "[", token_kind::square_open, ""sv);
       CHECK_SCAN(scan_symbol, "]", token_kind::square_close, ""sv);
+      CHECK_SCAN(scan_symbol, "->", token_kind::arrow, ""sv);
    }
 
    { // Check tokens with strange ends to ensure they only conform to the first token.
       CHECK_SCAN(scan_symbol, "+ =", token_kind::plus, "+"sv);
       CHECK_SCAN(scan_symbol, "+-", token_kind::plus, "+"sv);
+      CHECK_SCAN(scan_symbol, "++", token_kind::plus, "+"sv);
+      CHECK_SCAN(scan_symbol, "--", token_kind::minus, "-"sv);
       CHECK_SCAN(scan_symbol, "%%", token_kind::modulo, "%"sv);
    }
 
@@ -83,7 +76,6 @@ int main()
       CHECK_SCAN(scan_symbol, "$", token_kind::unknown_token, ""sv);
       CHECK_SCAN(scan_symbol, "&", token_kind::unknown_token, ""sv);
       CHECK_SCAN(scan_symbol, "|", token_kind::unknown_token, ""sv);
-      CHECK_SCAN(scan_symbol, ":", token_kind::unknown_token, ""sv);
       CHECK_SCAN(scan_symbol, "!", token_kind::unknown_token, ""sv);
       CHECK_SCAN(scan_symbol, "\\", token_kind::unknown_token, ""sv);
       CHECK_SCAN(scan_symbol, "?", token_kind::unknown_token, ""sv);
